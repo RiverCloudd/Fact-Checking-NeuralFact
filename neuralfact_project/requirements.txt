@@ -1,0 +1,13 @@
+langchain-openai
+langchain-core
+langgraph
+python-dotenv
+requests
+streamlit
+pyyaml
+nltk
+qdrant-client>=1.7.0
+sentence-transformers>=2.2.0
+pandas>=2.0.0
+pyarrow>=14.0.0
+fastembed
