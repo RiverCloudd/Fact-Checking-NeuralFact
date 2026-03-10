@@ -40,7 +40,7 @@ workflow.add_conditional_edges(
 workflow.add_edge("verify", END)
 
 # show the graph structure (optional)
-workflow.visualize()
+# workflow.visualize()
 
 # Đóng gói Agent
 factcheck_app = workflow.compile()

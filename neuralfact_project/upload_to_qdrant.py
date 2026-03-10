@@ -50,8 +50,12 @@ print(f"⚡ Đã phát hiện phần cứng tính toán: {DEVICE.upper()}")
 
 print("\n2. Kết nối tới Qdrant (gRPC Mode)...")
 try:
-    # Chuyển sang dùng gRPC port 6334 để tăng tốc I/O
-    client = QdrantClient(host="localhost", grpc_port=6334, prefer_grpc=True, timeout=120)
+    # Có gpu: Chuyển sang dùng gRPC port 6334 để tăng tốc I/O
+    if DEVICE == "cuda":
+        client = QdrantClient(host="localhost", grpc_port=6334, prefer_grpc=True, timeout=120)
+    else:
+    # Nếu không có gpu thì chạy qua REST API như cũ
+        client = QdrantClient(host="localhost", grpc_port=6333, prefer_grpc=False, timeout=120)
     print("✅ Kết nối Qdrant gRPC thành công")
 except Exception as e:
     print(f"❌ Không thể kết nối Qdrant: {e}")

@@ -18,27 +18,30 @@ decompose_prompt: |
 
 
 checkworthy_prompt: |
-  Nhiệm vụ của bạn là đánh giá từng mệnh đề được cung cấp để xác định xem nó có chứa thông tin thực tế có thể được xác minh khách quan bằng bằng chứng hay không.
+  Nhiệm vụ của bạn là đánh giá từng mệnh đề được cung cấp để xác định xem nó có chứa thông tin thực tế có thể được xác minh khách quan bằng bằng chứng hay không. Một mệnh đề được coi là "đáng kiểm chứng" (check-worthy) nếu nó là một khẳng định về sự thật có thể kiểm tra được qua các nguồn đáng tin cậy.
 
   Hãy xem xét các tiêu chí sau:
-  1. Sự thật vs. Ý kiến: Phân biệt giữa ý kiến chủ quan (không thể xác minh) và các khẳng định thực tế.
-  2. Rõ ràng và Cụ thể: Mệnh đề phải có chủ thể rõ ràng. (VD: "Anh ấy là kỹ sư" -> Không thể xác minh vì thiếu ngữ cảnh).
-  3. Độc lập: Mệnh đề phải chứa thông tin có thể tra cứu độc lập trên các công cụ tìm kiếm hoặc cơ sở dữ liệu.
+  1. **Tính thực tế**: Mệnh đề phải là một phát biểu về sự việc, sự kiện, dữ liệu, hoặc thông tin có thể đúng hoặc sai. Nó không phải là ý kiến chủ quan, cảm xúc, đánh giá giá trị (ví dụ: "tốt nhất", "đẹp", "nên").
+  2. **Tính cụ thể**: Mệnh đề phải đề cập đến các đối tượng, sự kiện, con số cụ thể, có thể xác định rõ ràng. Tránh các đại từ không rõ ràng như "anh ấy", "cô ấy", "nó", trừ khi ngữ cảnh đã xác định (nhưng ở đây chúng ta xét từng mệnh đề độc lập). Các tên riêng (người, địa danh, tổ chức) là đủ cụ thể.
+  3. **Tính khả kiểm**: Thông tin trong mệnh đề có thể được tra cứu, đối chiếu với các nguồn độc lập như bách khoa toàn thư, cơ sở dữ liệu, báo cáo khoa học, thống kê chính thức, v.v.
+  4. **Tính khẳng định**: Mệnh đề ở dạng khẳng định (không phải câu hỏi, mệnh lệnh, hay giả định). Ví dụ: "Nếu A thì B" là một điều kiện, không phải khẳng định trực tiếp.
 
-  Phản hồi phải ở định dạng JSON. Mỗi mệnh đề là một khóa, giá trị là "Có" hoặc "Không" kèm theo lý do ngắn gọn trong ngoặc đơn.
+  Dưới đây là một số ví dụ minh họa:
 
-  Ví dụ:
-  1. Thuật toán SVM (Support Vector Machine) luôn cho kết quả tốt hơn Decision Tree.
-  2. Giải chạy marathon là môn thể thao tuyệt vời nhất.
-  3. Ông ấy là giám đốc của tập đoàn Vingroup.
-  4. Phạm Nhật Vượng là chủ tịch hội đồng quản trị của tập đoàn Vingroup.
+  - "Barack Obama là tổng thống Hoa Kỳ." → **Có** (Đây là một sự thật lịch sử có thể kiểm chứng, với chủ thể rõ ràng.)
+  - "Thuốc XYZ chữa khỏi bệnh ung thư." → **Có** (Một tuyên bố y học có thể kiểm tra bằng nghiên cứu.)
+  - "Dân số Việt Nam năm 2023 là 100 triệu người." → **Có** (Số liệu thống kê có thể kiểm tra.)
+  - "Trái đất quay quanh Mặt trời." → **Có** (Sự thật khoa học.)
+  - "Anh ấy là kỹ sư." → **Không** (Thiếu thông tin về "anh ấy" là ai, không thể xác minh.)
+  - "Giải chạy marathon là môn thể thao tuyệt vời nhất." → **Không** (Ý kiến chủ quan, không thể kiểm chứng.)
+  - "Nên ăn nhiều rau xanh để tốt cho sức khỏe." → **Không** (Lời khuyên, không phải khẳng định thực tế.)
+  - "Có thể trời sẽ mưa vào ngày mai." → **Không** (Dự báo, không phải sự thật hiện tại có thể kiểm tra.)
+  - "Thuật toán SVM luôn cho kết quả tốt hơn Decision Tree." → **Không** (Nhận định phụ thuộc vào ngữ cảnh, không phải sự thật tuyệt đối.)
 
-  Kết quả mong đợi:
+  Phản hồi phải ở định dạng JSON. Mỗi mệnh đề là một khóa, giá trị là "Có" hoặc "Không" kèm theo lý do ngắn gọn trong ngoặc đơn. Ví dụ:
   {{
-      "Thuật toán SVM (Support Vector Machine) luôn cho kết quả tốt hơn Decision Tree.": "Không (Đây là nhận định mang tính tương đối phụ thuộc vào tập dữ liệu, không phải sự thật tuyệt đối.)",
-      "Giải chạy marathon là môn thể thao tuyệt vời nhất.": "Không (Đây là ý kiến đánh giá chủ quan.)",
-      "Ông ấy là giám đốc của tập đoàn Vingroup.": "Không (Thiếu tham chiếu cụ thể về việc 'Ông ấy' là ai.)",
-      "Phạm Nhật Vượng là chủ tịch hội đồng quản trị của tập đoàn Vingroup.": "Có (Chứa thông tin thực tế có thể kiểm chứng về chức danh của một cá nhân cụ thể.)"
+      "Barack Obama là tổng thống Hoa Kỳ.": "Có (Thông tin về chức vụ của một người cụ thể, có thể kiểm tra.)",
+      "Giải chạy marathon là môn thể thao tuyệt vời nhất.": "Không (Đánh giá chủ quan.)"
   }}
 
   Đối với các mệnh đề sau:
