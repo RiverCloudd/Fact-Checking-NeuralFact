@@ -280,8 +280,9 @@ def verify_node(state: FactCheckState):
         evidence_text = "\n\n".join(
             [f"[Nguồn {i+1}]: {_evidence_to_text(ev)}" for i, ev in enumerate(evidences_subset) if _evidence_to_text(ev)]
         )
-        verify_prompt = prompt_config.verify_prompt.format(
-            original_doc=original_doc_short,
+        
+        user_input = prompt_config.verify_prompt.format(
+            original_doc=state["input_text"],
             claim=claim,
             evidence=evidence_text,
         ).strip()
