@@ -269,6 +269,7 @@ def verify_node(state: FactCheckState):
         )
         
         user_input = prompt_config.verify_prompt.format(
+            original_doc=state["input_text"],
             claim=claim,
             evidence=evidence_text
         )
