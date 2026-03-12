@@ -1,5 +1,29 @@
+import csv
+import os
+from urllib.parse import urlparse
+
 import requests
 from core.config import SERPER_API_KEY
+
+# Load unreliable sources from media bias CSV at module level (once)
+_UNRELIABLE_DOMAINS = set()
+_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
+if os.path.exists(_CSV_PATH):
+    with open(_CSV_PATH, "r", encoding="utf-8") as _f:
+        for _row in csv.DictReader(_f):
+            rating = _row.get("factual_reporting_rating", "").strip()
+            if rating in ("LOW", "VERY LOW"):
+                raw_url = _row.get("url", "").strip()
+                domain = urlparse(raw_url).netloc.lower().lstrip("www.")
+                if domain:
+                    _UNRELIABLE_DOMAINS.add(domain)
+
+
+def _is_unreliable(link: str) -> bool:
+    """Check if a URL's domain is in the unreliable sources list."""
+    domain = urlparse(link).netloc.lower().lstrip("www.")
+    return domain in _UNRELIABLE_DOMAINS
+
 
 def search_google(query: str, top_k: int = 3) -> list:
     """Gọi Serper API lấy kết quả tìm kiếm (Tối ưu cho Tiếng Việt)
@@ -55,14 +79,16 @@ def search_google(query: str, top_k: int = 3) -> list:
             if description:
                 evidences.append(f"[Knowledge Graph] {description}")
         
-        # 3. Get organic results
+        # 3. Get organic results (filter out unreliable sources)
         if "organic" in search_data:
-            for result in search_data["organic"][:top_k]:
+            for result in search_data["organic"]:
+                if len(evidences) >= top_k:
+                    break
                 snippet = result.get("snippet", "")
                 title = result.get("title", "")
                 link = result.get("link", "")
                 
-                if snippet:
+                if snippet and not _is_unreliable(link):
                     evidence = f"[{title}]\n{snippet}\nNguồn: {link}"
                     evidences.append(evidence)
                     
