@@ -20,6 +20,26 @@ if os.path.exists(_CSV_PATH):
                 if domain:
                     _UNRELIABLE_DOMAINS.add(domain)
 
+
+def _is_unreliable(link: str) -> bool:
+    """Check if a URL's domain is in the unreliable sources list."""
+    domain = urlparse(link).netloc.lower().lstrip("www.")
+    return domain in _UNRELIABLE_DOMAINS
+
+
+# Load unreliable sources from media bias CSV at module level (once)
+_UNRELIABLE_DOMAINS = set()
+_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
+if os.path.exists(_CSV_PATH):
+    with open(_CSV_PATH, "r", encoding="utf-8") as _f:
+        for _row in csv.DictReader(_f):
+            rating = _row.get("factual_reporting_rating", "").strip()
+            if rating in ("LOW", "VERY LOW"):
+                raw_url = _row.get("url", "").strip()
+                domain = urlparse(raw_url).netloc.lower().lstrip("www.")
+                if domain:
+                    _UNRELIABLE_DOMAINS.add(domain)
+
 def _is_unreliable(link: str) -> bool:
     """Check if a URL's domain is in the unreliable sources list."""
     domain = urlparse(link).netloc.lower().lstrip("www.")
@@ -139,13 +159,9 @@ def search_google(query: str, top_k: int = 3) -> list:
                 title = result.get("title", "")
                 link = result.get("link", "")
                 
-                if snippet:
-                    evidences.append(_make_evidence_item(
-                        title=title,
-                        snippet=snippet,
-                        url=link,
-                        source_type="organic",
-                    ))
+                if snippet and not _is_unreliable(link):
+                    evidence = f"[{title}]\n{snippet}\nNguồn: {link}"
+                    evidences.append(evidence)
                     
     except requests.exceptions.Timeout:
         print(f"Serper API timeout khi tìm kiếm: '{query}'")
