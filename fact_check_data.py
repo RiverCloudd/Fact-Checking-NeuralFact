@@ -8,7 +8,7 @@ import time
 # DeepSeek API
 # =============================
 client = OpenAI(
-    api_key="sk-5a7e7fe7374d494ea87a4bbb2e5806ed",
+    api_key="YOUR-API",
     base_url="https://api.deepseek.com"
 )
 
