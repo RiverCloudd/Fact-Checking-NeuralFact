@@ -1,7 +1,5 @@
 # Fact-Checking-NeuralFact
 
-# Fact-Checking-NeuralFact
-
 ## Giới thiệu
 
 **Fact-Checking-NeuralFact** là dự án xây dựng pipeline thu thập dữ liệu tin tức và tạo bộ dữ liệu phục vụ bài toán **fact-checking**.
