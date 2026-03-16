@@ -103,6 +103,7 @@ def checkworthy_node(state: FactCheckState):
     for i in range(3):
         try:
             response = llm.invoke(user_input)
+            print(f"Raw checkworthy response: {response.content}")
             cleaned_content = clean_json_response(response.content)
             claim2checkworthy = json.loads(cleaned_content)
             
@@ -112,20 +113,21 @@ def checkworthy_node(state: FactCheckState):
                 prompt_tokens += usage.get('prompt_tokens', 0)
                 completion_tokens += usage.get('completion_tokens', 0)
             
-            # Filter claims that start with "Có" (Yes)
+            # FIX LỖI Ở ĐÂY: Dùng strip() và lower() để bắt chữ "có"/"không" một cách an toàn
             valid_answer = list(
                 filter(
-                    lambda x: x[1].startswith("Có") or x[1].startswith("Không"),
+                    lambda x: isinstance(x[1], str) and (x[1].strip().lower().startswith("có") or x[1].strip().lower().startswith("không")),
                     claim2checkworthy.items(),
                 )
             )
-            checkworthy_claims = list(
+            
+            checkworthy_claims_raw = list(
                 filter(
-                    lambda x: x[1].startswith("Có"), 
+                    lambda x: isinstance(x[1], str) and x[1].strip().lower().startswith("có"), 
                     claim2checkworthy.items()
                 )
             )
-            checkworthy_claims = [x[0] for x in checkworthy_claims]
+            checkworthy_claims = [x[0] for x in checkworthy_claims_raw]
             
             if len(valid_answer) == len(claim2checkworthy):
                 break
