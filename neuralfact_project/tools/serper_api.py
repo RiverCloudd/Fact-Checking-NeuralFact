@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import requests
 import os
+import os
 from core.config import SERPER_API_KEY
 
 # Load unreliable sources from media bias CSV at module level (once)
@@ -76,12 +77,14 @@ def search_google(query: str, top_k: int = 3) -> list:
     payload = {
         "q": query, 
         "num": top_k,
+        "num": top_k,
         "gl": "vn",
         "hl": "vi",
         "autocorrect": True # Tự động sửa lỗi chính tả trong query
     }
     
     evidences = []
+    timeout_seconds = float(os.getenv("SERPER_TIMEOUT_SECONDS", "6"))
     timeout_seconds = float(os.getenv("SERPER_TIMEOUT_SECONDS", "6"))
     
     try:
@@ -90,6 +93,7 @@ def search_google(query: str, top_k: int = 3) -> list:
             "https://google.serper.dev/search",
             headers=headers,
             json=payload,
+            timeout=timeout_seconds 
             timeout=timeout_seconds 
         )
         
@@ -154,7 +158,7 @@ def search_google(query: str, top_k: int = 3) -> list:
     unique_evidences = []
     seen = set()
     for ev in evidences:
-        key = (ev.get("url") or ev.get("text") or "").strip()
+        key = ev.strip()
         if key and key not in seen:
             unique_evidences.append(ev)
             seen.add(key)
