@@ -367,7 +367,7 @@ with tab4:
                     for claim, evidences in st.session_state.state['evidence'].items():
                         with st.expander(f"📌 {claim[:80]}... ({len(evidences)} evidences)"):
                             if evidences:
-                                for i, ev in enumerate(evidences[:5], 1):  # Show top 5
+                                for i, ev in enumerate(evidences, 1):  # Show top 5
                                     st.markdown(f"**Nguồn {i}:**")
                                     st.text(ev[:300] + "..." if len(ev) > 300 else ev)
                                     st.divider()
