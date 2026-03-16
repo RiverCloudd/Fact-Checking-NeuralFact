@@ -1,4 +1,5 @@
 import requests
+import os
 from core.config import SERPER_API_KEY
 
 def search_google(query: str, top_k: int = 3) -> list:
@@ -19,13 +20,14 @@ def search_google(query: str, top_k: int = 3) -> list:
     # Thêm gl (quốc gia) và hl (ngôn ngữ) để ép Google trả kết quả tiếng Việt
     payload = {
         "q": query, 
-        "num": top_k * 2,
+        "num": top_k,
         "gl": "vn",
         "hl": "vi",
         "autocorrect": True # Tự động sửa lỗi chính tả trong query
     }
     
     evidences = []
+    timeout_seconds = float(os.getenv("SERPER_TIMEOUT_SECONDS", "6"))
     
     try:
         # Thêm timeout để tránh treo pipeline
@@ -33,7 +35,7 @@ def search_google(query: str, top_k: int = 3) -> list:
             "https://google.serper.dev/search",
             headers=headers,
             json=payload,
-            timeout=10 
+            timeout=timeout_seconds 
         )
         
         # Bắt các lỗi HTTP (401 Unauthorized, 403 Forbidden, 500...)
@@ -73,4 +75,15 @@ def search_google(query: str, top_k: int = 3) -> list:
     except Exception as e:
         print(f"Lỗi không xác định khi parse dữ liệu Serper: {e}")
     
-    return evidences
+    # Deduplicate, preserve order, and hard cap to top_k results.
+    unique_evidences = []
+    seen = set()
+    for ev in evidences:
+        key = ev.strip()
+        if key and key not in seen:
+            unique_evidences.append(ev)
+            seen.add(key)
+        if len(unique_evidences) >= top_k:
+            break
+
+    return unique_evidences

@@ -1,17 +1,25 @@
 decompose_prompt: |
-  Nhiệm vụ của bạn là phân tách văn bản dưới đây thành các mệnh đề nguyên tử (atomic claims) để phục vụ cho hệ thống kiểm chứng sự thật (Fact-checking).
-  Câu trả lời phải là định dạng JSON với một khóa duy nhất "claims", chứa danh sách các chuỗi.
+  Tách văn bản thành các claim để fact-check.
+  Trả JSON duy nhất: {{"claims": ["..."]}}.
 
-  [CÁC QUY TẮC BẮT BUỘC TUÂN THỦ]:
-  1. Tính trọn vẹn ngữ cảnh: Mỗi mệnh đề phải tự đứng độc lập và giữ nguyên bối cảnh. Nếu câu gốc mô tả một sự kiện gắn với các chủ thể (người, tổ chức, địa điểm), bạn phải lặp lại đầy đủ các chủ thể đó vào TỪNG mệnh đề.
-  2. Không dùng đại từ: Tuyệt đối tránh các từ tham chiếu mơ hồ như 'anh ấy', 'cô ấy', 'nó', 'điều này', 'công ty đó'. Hãy sử dụng tên đầy đủ.
-  3. Ràng buộc đối tượng: Nếu một con số hoặc hành động thuộc về một mối quan hệ, phải nêu rõ các bên liên quan.
-  4. Mỗi mệnh đề phải ngắn gọn (dưới 20 từ) và chứa một ý duy nhất có thể kiểm chứng.
+  Quy tắc:
+  1. Giữ nguyên nội dung gốc, không sửa sai, không thêm kiến thức ngoài văn bản.
+  2. Không suy diễn. Chỉ viết lại các ý xuất hiện rõ ràng trong văn bản.
+  3. Không dùng đại từ mơ hồ; thay bằng chủ thể đầy đủ nếu có trong câu gốc.
+  4. Mỗi claim ngắn gọn, độc lập, có thể kiểm chứng.
+  5. Nếu một câu là một phát biểu thống nhất gồm kết quả + thời gian + quan hệ giữa các bên, phải giữ nguyên thành một claim; không tách nếu việc tách có thể làm từng phần đúng riêng lẻ nhưng câu gốc sai.
+  6. Chỉ tách khi các vế là các sự thật độc lập.
+  7. Tối đa {max_claims} claim.
 
-  Ví dụ:
-  Văn bản: "Cầu thủ Nguyễn Quang Hải đã ký bản hợp đồng kéo dài 5 năm với câu lạc bộ Pau FC của Pháp."
-  Kết quả:
-  {{"claims": ["Nguyễn Quang Hải đã ký bản hợp đồng với câu lạc bộ Pau FC.", "Bản hợp đồng giữa Nguyễn Quang Hải và câu lạc bộ Pau FC kéo dài 5 năm.", "Câu lạc bộ Pau FC thuộc nước Pháp."]}}
+  Ví dụ đúng:
+  Văn bản: "Obama là tổng thống thứ 44 của Anh. Ông sinh năm 1961 tại Hawaii."
+  Kết quả: {{"claims": ["Obama là tổng thống thứ 44 của Anh.", "Obama sinh năm 1961 tại Hawaii."]}}
+
+  Văn bản: "Iran thắng Mỹ vào năm 2026."
+  Kết quả: {{"claims": ["Iran thắng Mỹ vào năm 2026."]}}
+
+  Văn bản: "Iran tuyên bố chiến thắng Mỹ. Cuộc chiến diễn ra vào năm 2026."
+  Kết quả: {{"claims": ["Iran tuyên bố chiến thắng Mỹ.", "Cuộc chiến diễn ra vào năm 2026."]}}
 
   Văn bản: {doc}
   Kết quả:
@@ -69,24 +77,11 @@ verify_prompt: |
   Nhiệm vụ của bạn là đánh giá độ chính xác của một [Mệnh đề] được trích xuất từ [Ngữ cảnh gốc], dựa trên [Bằng chứng] đi kèm.
   Hãy đọc kỹ bằng chứng. Nếu bằng chứng thiếu chi tiết, không có nghĩa là mệnh đề sai. Hãy phân biệt rõ ràng giữa phần thông tin bị sai lệch và phần thông tin được bằng chứng ủng hộ.
 
-  Phản hồi bằng định dạng JSON bao gồm 4 khóa sau:
-  - "reasoning": Giải thích logic suy luận của bạn dựa trên bằng chứng.
-  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu sai, hãy chỉ ra điểm sai lệch cụ thể.
-  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu sai, cung cấp câu sửa lỗi dựa trên bằng chứng.
-  - "factuality": true (nếu đúng sự thật), false (nếu sai sự thật), hoặc "NEI" (Not Enough Information - nếu bằng chứng không đề cập đến).
-
-  Input:
-  [Ngữ cảnh gốc]: Thành phố Hồ Chí Minh có dân số khoảng 9 triệu người.
-  [Mệnh đề]: Thành phố Hồ Chí Minh có dân số khoảng 9 triệu người.
-  [Bằng chứng]: Theo số liệu năm 2023, dân số nội thành TP.HCM là khoảng 9,3 triệu người.
-
-  Output:
-  {{
-      "reasoning": "Bằng chứng cho thấy dân số nội thành là 9,3 triệu, rất gần với mức ước lượng khoảng 9 triệu người trong mệnh đề. Do đó có thể coi là chính xác.",
-      "error": "không có",
-      "correction": "không có",
-      "factuality": true
-  }}
+  Phản hồi bằng JSON với 4 khóa sau:
+  - "reasoning": Giải thích ngắn gọn dựa trên bằng chứng, tối đa 25 từ.
+  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu thiếu căn cứ hoặc sai, chỉ ra điểm chưa được chứng minh hoặc điểm sai.
+  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu thiếu căn cứ hoặc sai, cung cấp câu sửa thận trọng hơn.
+  - "factuality": chỉ trả true hoặc false. Nếu không đủ căn cứ, trả false.
 
   Input:
   [Ngữ cảnh gốc]: {original_doc}
