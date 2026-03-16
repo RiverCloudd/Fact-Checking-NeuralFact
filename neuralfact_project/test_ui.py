@@ -83,10 +83,9 @@ with st.sidebar:
         st.rerun()
 
 # Main content
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📝 Input & Decompose",
     "✔️ Checkworthy",
-    "❓ Query Generation",
     "🔍 Retrieval",
     "✅ Verification",
     "📊 Full Pipeline"
@@ -263,77 +262,16 @@ with tab2:
                         st.code(traceback.format_exc())
 
 # ============================================================
-# TAB 3: QUERY GENERATION
+# TAB 3: RETRIEVAL
 # ============================================================
 with tab3:
-    st.header("❓ Bước 3: Query Generation")
-    st.markdown("Sinh nhiều câu hỏi kiểm chứng cho mỗi claim")
+    st.header("🔍 Bước 3: Evidence Retrieval")
+    st.markdown("Thu thập bằng chứng từ Google (và Qdrant nếu bật USE_QDRANT=true)")
     
     if not st.session_state.state['checkworthy_claims']:
         st.warning("⚠️ Chưa có checkworthy claims. Chạy Tab 2 trước.")
     else:
-        st.info(f"Có **{len(st.session_state.state['checkworthy_claims'])}** claims cần tạo queries")
-        
-        col1, col2 = st.columns([1, 3])
-        
-        with col1:
-            run_query_gen = st.button("▶️ Run Query Gen", type="primary", use_container_width=True)
-        
-        with col2:
-            show_prompt_qg = st.checkbox("Hiển thị prompt", key="show_qgen_prompt")
-        
-        if show_prompt_qg:
-            with st.expander("📋 Query Generation Prompt Template"):
-                st.code(prompt_config.qgen_prompt, language="text")
-        
-        if run_query_gen:
-            with st.spinner("Đang sinh queries..."):
-                try:
-                    from pipeline.nodes import query_gen_node
-                    
-                    start_time = time.time()
-                    result = query_gen_node(st.session_state.state)
-                    elapsed = time.time() - start_time
-                    
-                    st.session_state.state.update(result)
-                    
-                    st.success(f"✅ Hoàn thành trong {elapsed:.2f}s")
-                    
-                    # Results
-                    st.subheader("📊 Kết quả:")
-                    total_queries = sum(len(q) for q in st.session_state.state['queries'].values())
-                    st.info(f"Tổng **{total_queries}** queries cho **{len(st.session_state.state['queries'])}** claims")
-                    
-                    for claim, queries in st.session_state.state['queries'].items():
-                        with st.expander(f"📌 {claim[:80]}..."):
-                            st.markdown(f"**{len(queries)} queries:**")
-                            for i, q in enumerate(queries, 1):
-                                st.markdown(f"{i}. {q}")
-                    
-                    # Metrics
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric("Input Tokens", st.session_state.state['prompt_tokens'])
-                    col2.metric("Output Tokens", st.session_state.state['completion_tokens'])
-                    col3.metric("Latency", f"{elapsed:.2f}s")
-                    
-                except Exception as e:
-                    st.error(f"❌ Lỗi: {e}")
-                    import traceback
-                    with st.expander("Chi tiết lỗi"):
-                        st.code(traceback.format_exc())
-
-# ============================================================
-# TAB 4: RETRIEVAL
-# ============================================================
-with tab4:
-    st.header("🔍 Bước 4: Evidence Retrieval")
-    st.markdown("Thu thập bằng chứng từ Qdrant + Serper")
-    
-    if not st.session_state.state['queries']:
-        st.warning("⚠️ Chưa có queries. Chạy Tab 3 trước.")
-    else:
-        total_queries = sum(len(q) for q in st.session_state.state['queries'].values())
-        st.info(f"Có **{total_queries}** queries cần retrieve")
+        st.info(f"Có **{len(st.session_state.state['checkworthy_claims'])}** claims cần retrieve")
         
         st.warning("⚠️ **Lưu ý:** Bước này sẽ gọi Serper API (tốn credit)")
         
@@ -383,10 +321,10 @@ with tab4:
                         st.code(traceback.format_exc())
 
 # ============================================================
-# TAB 5: VERIFICATION
+# TAB 4: VERIFICATION
 # ============================================================
-with tab5:
-    st.header("✅ Bước 5: Verification")
+with tab4:
+    st.header("✅ Bước 4: Verification")
     st.markdown("Kiểm chứng claims với error detection")
     
     if not st.session_state.state['evidence']:
@@ -428,10 +366,8 @@ with tab5:
                             
                             if factuality == True or str(factuality).lower() == "true":
                                 st.success("✅ **ĐÚNG** (Supported)")
-                            elif factuality == False or str(factuality).lower() == "false":
-                                st.error("❌ **SAI** (Refuted)")
                             else:
-                                st.warning("⚠️ **KHÔNG ĐỦ THÔNG TIN** (NEI)")
+                                st.error("❌ **SAI / KHÔNG ĐỦ CĂN CỨ**")
                             
                             st.markdown(f"**Reasoning:** {verdict.get('reasoning', '')}")
                             
@@ -457,9 +393,9 @@ with tab5:
                         st.code(traceback.format_exc())
 
 # ============================================================
-# TAB 6: FULL PIPELINE
+# TAB 5: FULL PIPELINE
 # ============================================================
-with tab6:
+with tab5:
     st.header("📊 Full Pipeline Test")
     st.markdown("Chạy toàn bộ pipeline một lần")
     
@@ -490,7 +426,6 @@ with tab6:
         from pipeline.nodes import (
             decompose_node,
             checkworthy_node,
-            query_gen_node,
             retrieve_node,
             verify_node
         )
@@ -500,31 +435,25 @@ with tab6:
         
         try:
             # Step 1: Decompose
-            status_text.text("1/5 Decompose...")
+            status_text.text("1/4 Decompose...")
             result = decompose_node(st.session_state.state)
             st.session_state.state.update(result)
-            progress_bar.progress(20)
+            progress_bar.progress(25)
             
             # Step 2: Checkworthy
-            status_text.text("2/5 Checkworthy...")
+            status_text.text("2/4 Checkworthy...")
             result = checkworthy_node(st.session_state.state)
             st.session_state.state.update(result)
-            progress_bar.progress(40)
+            progress_bar.progress(50)
             
-            # Step 3: Query Gen
-            status_text.text("3/5 Query Generation...")
-            result = query_gen_node(st.session_state.state)
-            st.session_state.state.update(result)
-            progress_bar.progress(60)
-            
-            # Step 4: Retrieval
-            status_text.text("4/5 Retrieval...")
+            # Step 3: Retrieval
+            status_text.text("3/4 Retrieval...")
             result = retrieve_node(st.session_state.state)
             st.session_state.state.update(result)
-            progress_bar.progress(80)
+            progress_bar.progress(75)
             
-            # Step 5: Verification
-            status_text.text("5/5 Verification...")
+            # Step 4: Verification
+            status_text.text("4/4 Verification...")
             result = verify_node(st.session_state.state)
             st.session_state.state.update(result)
             progress_bar.progress(100)
@@ -535,11 +464,10 @@ with tab6:
             st.divider()
             st.subheader("📊 Tổng kết")
             
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3 = st.columns(3)
             col1.metric("Claims", len(st.session_state.state['claims']))
             col2.metric("Checkworthy", len(st.session_state.state['checkworthy_claims']))
-            col3.metric("Queries", sum(len(q) for q in st.session_state.state['queries'].values()))
-            col4.metric("Evidences", sum(len(e) for e in st.session_state.state['evidence'].values()))
+            col3.metric("Evidences", sum(len(e) for e in st.session_state.state['evidence'].values()))
             
             # Tokens & Cost
             st.divider()
@@ -562,10 +490,8 @@ with tab6:
                     
                     if factuality == True or str(factuality).lower() == "true":
                         st.success("✅ **ĐÚNG**")
-                    elif factuality == False or str(factuality).lower() == "false":
-                        st.error("❌ **SAI**")
                     else:
-                        st.warning("⚠️ **NEI**")
+                        st.error("❌ **SAI / KHÔNG ĐỦ CĂN CỨ**")
                     
                     st.markdown(f"**Reasoning:** {verdict.get('reasoning', '')}")
                     

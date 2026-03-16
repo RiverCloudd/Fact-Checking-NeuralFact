@@ -14,12 +14,12 @@ if st.button("Kiểm tra ngay", type="primary"):
     if not user_input.strip():
         st.warning("Vui lòng nhập văn bản!")
     else:
-        with st.spinner("Đang chạy Pipeline (Decompose ➡ Retrieve ➡ Verify)..."):
+        with st.spinner("Đang chạy Pipeline (Decompose ➡ Checkworthy ➡ Retrieve ➡ Verify)..."):
             start_time = time.time()
             
             initial_state = {
                 "input_text": user_input, "claims": [], "checkworthy_claims": [],
-                "queries": {}, "evidence": {}, "verdicts": {}, "retry_count": 0,
+                "queries": {}, "evidence": {}, "verdicts": {}, "overall_verdict": {}, "retry_count": 0,
                 "prompt_tokens": 0, "completion_tokens": 0
             }
             
@@ -47,6 +47,25 @@ if st.button("Kiểm tra ngay", type="primary"):
                 
                 st.divider()
                 st.subheader("📊 Kết quả chi tiết")
+
+                overall = final_state.get("overall_verdict", {})
+                if overall:
+                    fact = overall.get("factuality", False)
+                    summary = overall.get("summary", "")
+                    counts = overall.get("counts", {})
+                    st.subheader("🧾 Kết luận toàn bộ bản tin")
+                    if fact is True:
+                        st.success("Kết luận tổng: ✅ ĐÚNG")
+                    else:
+                        st.error("Kết luận tổng: ❌ SAI")
+
+                    if summary:
+                        st.markdown(f"**Tóm tắt:** {summary}")
+                    if isinstance(counts, dict):
+                        st.caption(
+                            f"Số mệnh đề: đúng={counts.get('true', 0)}, sai={counts.get('false', 0)}, NEI={counts.get('nei', 0)}"
+                        )
+                    st.divider()
                 
                 for claim, verdict_data in final_state["verdicts"].items():
                     with st.expander(f"Mệnh đề: {claim}", expanded=True):
@@ -58,10 +77,8 @@ if st.button("Kiểm tra ngay", type="primary"):
                         # Display verdict with appropriate color
                         if factuality == True or str(factuality).lower() == "true":
                             st.success(f"**Kết luận:** ✅ ĐÚNG (Supported)")
-                        elif factuality == False or str(factuality).lower() == "false":
-                            st.error(f"**Kết luận:** ❌ SAI (Refuted)")
                         else:
-                            st.warning(f"**Kết luận:** ⚠️ KHÔNG ĐỦ THÔNG TIN (NEI)")
+                            st.error(f"**Kết luận:** ❌ SAI / KHÔNG ĐỦ CĂN CỨ")
                         
                         st.markdown(f"**Lý do (Reasoning):** {reasoning}")
                         
