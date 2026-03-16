@@ -176,6 +176,7 @@ def checkworthy_node(state: FactCheckState):
     for i in range(checkworthy_max_retries):
         try:
             response = llm.invoke(user_input)
+            print(f"Raw checkworthy response: {response.content}")
             cleaned_content = clean_json_response(response.content)
             parsed = json.loads(cleaned_content)
             if isinstance(parsed, dict):
@@ -185,8 +186,24 @@ def checkworthy_node(state: FactCheckState):
                 usage = response.response_metadata.get('token_usage', {})
                 prompt_tokens += usage.get('prompt_tokens', 0)
                 completion_tokens += usage.get('completion_tokens', 0)
-
-            if llm_result is not None:
+            
+            # FIX LỖI Ở ĐÂY: Dùng strip() và lower() để bắt chữ "có"/"không" một cách an toàn
+            valid_answer = list(
+                filter(
+                    lambda x: isinstance(x[1], str) and (x[1].strip().lower().startswith("có") or x[1].strip().lower().startswith("không")),
+                    claim2checkworthy.items(),
+                )
+            )
+            
+            checkworthy_claims_raw = list(
+                filter(
+                    lambda x: isinstance(x[1], str) and x[1].strip().lower().startswith("có"), 
+                    claim2checkworthy.items()
+                )
+            )
+            checkworthy_claims = [x[0] for x in checkworthy_claims_raw]
+            
+            if len(valid_answer) == len(claim2checkworthy):
                 break
         except Exception as e:
             print(f"Checkworthy parse error (attempt {i+1}): {e}")
