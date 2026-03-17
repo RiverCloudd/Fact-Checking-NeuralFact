@@ -1,7 +1,27 @@
+from urllib.parse import urlparse
 import requests
 import os
 from core.config import SERPER_API_KEY
+import csv
 
+# Load unreliable sources from media bias CSV at module level (once)
+_UNRELIABLE_DOMAINS = set()
+_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
+if os.path.exists(_CSV_PATH):
+    with open(_CSV_PATH, "r", encoding="utf-8") as _f:
+        for _row in csv.DictReader(_f):
+            rating = _row.get("factual_reporting_rating", "").strip()
+            if rating in ("LOW", "VERY LOW"):
+                raw_url = _row.get("url", "").strip()
+                domain = urlparse(raw_url).netloc.lower().lstrip("www.")
+                if domain:
+                    _UNRELIABLE_DOMAINS.add(domain)
+
+
+def _is_unreliable(link: str) -> bool:
+    """Check if a URL's domain is in the unreliable sources list."""
+    domain = urlparse(link).netloc.lower().lstrip("www.")
+    return domain in _UNRELIABLE_DOMAINS
 
 def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") -> str:
     parts = []
@@ -17,7 +37,6 @@ def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") ->
         parts.append(f"Nguồn: {clean_url}")
 
     return "\n".join(parts).strip()
-
 
 def _make_evidence_item(
     *,
@@ -113,7 +132,7 @@ def search_google(query: str, top_k: int = 3) -> list:
                 title = result.get("title", "")
                 link = result.get("link", "")
                 
-                if snippet:
+                if snippet and link and not _is_unreliable(link):
                     evidences.append(_make_evidence_item(
                         title=title,
                         snippet=snippet,
