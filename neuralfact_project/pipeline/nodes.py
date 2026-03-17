@@ -155,11 +155,58 @@ def checkworthy_node(state: FactCheckState):
     print(f"Claims preview: {claims[:3]}...")
 
     max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
-    checkworthy_claims = [c for c in claims if isinstance(c, str) and len(c.strip()) >= 5][:max_claims]
+    prompt_tokens = state.get("prompt_tokens", 0)
+    completion_tokens = state.get("completion_tokens", 0)
+    checkworthy_max_retries = max(1, int(os.getenv("CHECKWORTHY_MAX_RETRIES", "1")))
+
+    # Keep only clean candidate claims before sending to LLM.
+    candidate_claims = [c.strip() for c in claims if isinstance(c, str) and c.strip()]
+    candidate_claims = candidate_claims[:max_claims]
+
+    if not candidate_claims:
+        return {
+            "checkworthy_claims": [],
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens
+        }
+
+    user_input = prompt_config.checkworthy_prompt.format(texts="\n".join(candidate_claims)).strip()
+    llm_result = None
+
+    for i in range(checkworthy_max_retries):
+        try:
+            response = llm.invoke(user_input)
+            cleaned_content = clean_json_response(response.content)
+            parsed = json.loads(cleaned_content)
+            if isinstance(parsed, dict):
+                llm_result = parsed
+
+            if hasattr(response, 'response_metadata') and response.response_metadata:
+                usage = response.response_metadata.get('token_usage', {})
+                prompt_tokens += usage.get('prompt_tokens', 0)
+                completion_tokens += usage.get('completion_tokens', 0)
+
+            if llm_result is not None:
+                break
+        except Exception as e:
+            print(f"Checkworthy parse error (attempt {i+1}): {e}")
+            continue
+
+    checkworthy_claims = []
+    if isinstance(llm_result, dict):
+        for claim in candidate_claims:
+            verdict = str(llm_result.get(claim, "")).strip().lower()
+            if verdict.startswith("có"):
+                checkworthy_claims.append(claim)
+
+    # Safe fallback if LLM output is empty/unparseable.
+    if not checkworthy_claims:
+        checkworthy_claims = candidate_claims
+
     return {
-        "checkworthy_claims": checkworthy_claims if checkworthy_claims else claims[:max_claims],
-        "prompt_tokens": state.get("prompt_tokens", 0),
-        "completion_tokens": state.get("completion_tokens", 0)
+        "checkworthy_claims": checkworthy_claims,
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens
     }
 
 def retrieve_node(state: FactCheckState):
