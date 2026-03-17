@@ -176,6 +176,7 @@ def checkworthy_node(state: FactCheckState):
     for i in range(checkworthy_max_retries):
         try:
             response = llm.invoke(user_input)
+            print(f"Raw checkworthy response: {response.content}")
             cleaned_content = clean_json_response(response.content)
             parsed = json.loads(cleaned_content)
             if isinstance(parsed, dict):

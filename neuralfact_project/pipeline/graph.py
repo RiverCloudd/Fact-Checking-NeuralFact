@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, END
+import os
 from pipeline.state import FactCheckState
 from pipeline.nodes import (
     decompose_node, checkworthy_node, retrieve_node, verify_node
