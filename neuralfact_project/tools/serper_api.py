@@ -1,11 +1,8 @@
-import csv
-import os
 from urllib.parse import urlparse
-
 import requests
 import os
-import os
 from core.config import SERPER_API_KEY
+import csv
 
 # Load unreliable sources from media bias CSV at module level (once)
 _UNRELIABLE_DOMAINS = set()
@@ -20,25 +17,6 @@ if os.path.exists(_CSV_PATH):
                 if domain:
                     _UNRELIABLE_DOMAINS.add(domain)
 
-
-def _is_unreliable(link: str) -> bool:
-    """Check if a URL's domain is in the unreliable sources list."""
-    domain = urlparse(link).netloc.lower().lstrip("www.")
-    return domain in _UNRELIABLE_DOMAINS
-
-
-# Load unreliable sources from media bias CSV at module level (once)
-_UNRELIABLE_DOMAINS = set()
-_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
-if os.path.exists(_CSV_PATH):
-    with open(_CSV_PATH, "r", encoding="utf-8") as _f:
-        for _row in csv.DictReader(_f):
-            rating = _row.get("factual_reporting_rating", "").strip()
-            if rating in ("LOW", "VERY LOW"):
-                raw_url = _row.get("url", "").strip()
-                domain = urlparse(raw_url).netloc.lower().lstrip("www.")
-                if domain:
-                    _UNRELIABLE_DOMAINS.add(domain)
 
 def _is_unreliable(link: str) -> bool:
     """Check if a URL's domain is in the unreliable sources list."""
@@ -97,14 +75,12 @@ def search_google(query: str, top_k: int = 3) -> list:
     payload = {
         "q": query, 
         "num": top_k,
-        "num": top_k,
         "gl": "vn",
         "hl": "vi",
         "autocorrect": True # Tự động sửa lỗi chính tả trong query
     }
     
     evidences = []
-    timeout_seconds = float(os.getenv("SERPER_TIMEOUT_SECONDS", "6"))
     timeout_seconds = float(os.getenv("SERPER_TIMEOUT_SECONDS", "6"))
     
     try:
@@ -113,7 +89,6 @@ def search_google(query: str, top_k: int = 3) -> list:
             "https://google.serper.dev/search",
             headers=headers,
             json=payload,
-            timeout=timeout_seconds 
             timeout=timeout_seconds 
         )
         
@@ -150,18 +125,20 @@ def search_google(query: str, top_k: int = 3) -> list:
                     source_type="knowledge_graph",
                 ))
         
-        # 3. Get organic results (filter out unreliable sources)
+        # 3. Get organic results
         if "organic" in search_data:
-            for result in search_data["organic"]:
-                if len(evidences) >= top_k:
-                    break
+            for result in search_data["organic"][:top_k]:
                 snippet = result.get("snippet", "")
                 title = result.get("title", "")
                 link = result.get("link", "")
                 
-                if snippet and not _is_unreliable(link):
-                    evidence = f"[{title}]\n{snippet}\nNguồn: {link}"
-                    evidences.append(evidence)
+                if snippet and link and not _is_unreliable(link):
+                    evidences.append(_make_evidence_item(
+                        title=title,
+                        snippet=snippet,
+                        url=link,
+                        source_type="organic",
+                    ))
                     
     except requests.exceptions.Timeout:
         print(f"Serper API timeout khi tìm kiếm: '{query}'")
@@ -174,7 +151,7 @@ def search_google(query: str, top_k: int = 3) -> list:
     unique_evidences = []
     seen = set()
     for ev in evidences:
-        key = ev.strip()
+        key = (ev.get("url") or ev.get("text") or "").strip()
         if key and key not in seen:
             unique_evidences.append(ev)
             seen.add(key)
