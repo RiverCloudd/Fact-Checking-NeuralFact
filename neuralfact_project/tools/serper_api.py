@@ -2,6 +2,42 @@ import requests
 import os
 from core.config import SERPER_API_KEY
 
+
+def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") -> str:
+    parts = []
+    clean_title = str(title or "").strip()
+    clean_snippet = str(snippet or "").strip()
+    clean_url = str(url or "").strip()
+
+    if clean_title:
+        parts.append(f"[{clean_title}]")
+    if clean_snippet:
+        parts.append(clean_snippet)
+    if clean_url:
+        parts.append(f"Nguồn: {clean_url}")
+
+    return "\n".join(parts).strip()
+
+
+def _make_evidence_item(
+    *,
+    title: str = "",
+    snippet: str = "",
+    url: str = "",
+    source_type: str = "organic",
+    source_name: str = "google-serper",
+    tier: str = "unrated",
+) -> dict:
+    return {
+        "title": str(title or "").strip(),
+        "snippet": str(snippet or "").strip(),
+        "url": str(url or "").strip(),
+        "text": _compose_evidence_text(title=title, snippet=snippet, url=url),
+        "source_type": source_type,
+        "source_name": source_name,
+        "tier": tier,
+    }
+
 def search_google(query: str, top_k: int = 3) -> list:
     """Gọi Serper API lấy kết quả tìm kiếm (Tối ưu cho Tiếng Việt)
     
@@ -10,14 +46,13 @@ def search_google(query: str, top_k: int = 3) -> list:
         top_k: Số kết quả trả về
         
     Returns:
-        list: Danh sách các snippet bằng chứng
+        list: Danh sách evidence objects có metadata
     """
     headers = {
         "X-API-KEY": SERPER_API_KEY, 
         "Content-Type": "application/json"
     }
     
-    # Thêm gl (quốc gia) và hl (ngôn ngữ) để ép Google trả kết quả tiếng Việt
     payload = {
         "q": query, 
         "num": top_k,
@@ -38,7 +73,6 @@ def search_google(query: str, top_k: int = 3) -> list:
             timeout=timeout_seconds 
         )
         
-        # Bắt các lỗi HTTP (401 Unauthorized, 403 Forbidden, 500...)
         resp.raise_for_status()
         search_data = resp.json()
         
@@ -46,16 +80,31 @@ def search_google(query: str, top_k: int = 3) -> list:
         if "answerBox" in search_data:
             answer_box = search_data["answerBox"]
             if "answer" in answer_box:
-                evidences.append(f"[Google Answer] {answer_box['answer']}")
+                evidences.append(_make_evidence_item(
+                    title="Google Answer",
+                    snippet=answer_box["answer"],
+                    url=answer_box.get("link", ""),
+                    source_type="answer_box",
+                ))
             elif "snippet" in answer_box:
-                evidences.append(f"[Google Snippet] {answer_box['snippet']}")
+                evidences.append(_make_evidence_item(
+                    title="Google Snippet",
+                    snippet=answer_box["snippet"],
+                    url=answer_box.get("link", ""),
+                    source_type="answer_box",
+                ))
                 
         # 2. Get knowledge graph if available
         if "knowledgeGraph" in search_data:
             kg = search_data["knowledgeGraph"]
             description = kg.get("description", "")
             if description:
-                evidences.append(f"[Knowledge Graph] {description}")
+                evidences.append(_make_evidence_item(
+                    title=kg.get("title", "Knowledge Graph"),
+                    snippet=description,
+                    url=kg.get("website", "") or kg.get("descriptionLink", ""),
+                    source_type="knowledge_graph",
+                ))
         
         # 3. Get organic results
         if "organic" in search_data:
@@ -65,8 +114,12 @@ def search_google(query: str, top_k: int = 3) -> list:
                 link = result.get("link", "")
                 
                 if snippet:
-                    evidence = f"[{title}]\n{snippet}\nNguồn: {link}"
-                    evidences.append(evidence)
+                    evidences.append(_make_evidence_item(
+                        title=title,
+                        snippet=snippet,
+                        url=link,
+                        source_type="organic",
+                    ))
                     
     except requests.exceptions.Timeout:
         print(f"Serper API timeout khi tìm kiếm: '{query}'")
@@ -79,7 +132,7 @@ def search_google(query: str, top_k: int = 3) -> list:
     unique_evidences = []
     seen = set()
     for ev in evidences:
-        key = ev.strip()
+        key = (ev.get("url") or ev.get("text") or "").strip()
         if key and key not in seen:
             unique_evidences.append(ev)
             seen.add(key)

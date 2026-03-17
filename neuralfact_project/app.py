@@ -3,6 +3,12 @@ import time
 from pipeline.graph import factcheck_app
 from core.config import PRICE_1M_INPUT_TOKENS, PRICE_1M_OUTPUT_TOKENS
 
+
+def _display_evidence_text(ev) -> str:
+    if isinstance(ev, dict):
+        return str(ev.get("text", "")).strip()
+    return str(ev or "").strip()
+
 st.set_page_config(page_title="NeuralFact Checker", layout="wide")
 
 st.title("🕵️ Hệ thống Kiểm chứng Tin giả (NeuralFact)")
@@ -95,7 +101,7 @@ if st.button("Kiểm tra ngay", type="primary"):
                             for i, ev in enumerate(evidences[:3], 1):  # Show top 3
                                 with st.container():
                                     st.caption(f"Nguồn {i}:")
-                                    st.text(ev[:300] + "..." if len(ev) > 300 else ev)
+                                    st.text(_display_evidence_text(ev))
                         else:
                             st.warning("**Bằng chứng:** Không tìm thấy dữ liệu.")
                         

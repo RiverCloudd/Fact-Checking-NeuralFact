@@ -6,6 +6,12 @@ import streamlit as st
 import json
 import time
 
+
+def _display_evidence_text(ev) -> str:
+    if isinstance(ev, dict):
+        return str(ev.get("text", "")).strip()
+    return str(ev or "").strip()
+
 st.set_page_config(page_title="NeuralFact - Component Testing", layout="wide")
 
 st.title("🧪 NeuralFact Component Testing")
@@ -307,7 +313,7 @@ with tab3:
                             if evidences:
                                 for i, ev in enumerate(evidences, 1):  # Show top 5
                                     st.markdown(f"**Nguồn {i}:**")
-                                    st.text(ev[:300] + "..." if len(ev) > 300 else ev)
+                                    st.text(_display_evidence_text(ev))
                                     st.divider()
                             else:
                                 st.warning("Không tìm thấy evidence")
