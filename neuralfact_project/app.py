@@ -222,24 +222,101 @@ def _inject_modern_styles() -> None:
             }
 
             .hero {
-                background: linear-gradient(130deg, rgba(11,26,44,0.9) 0%, rgba(13,34,58,0.86) 55%, rgba(17,44,74,0.84) 100%);
-                border: 1px solid var(--ring);
+                position: relative;
+                isolation: isolate;
+                border: 1px solid rgba(103, 232, 249, 0.22);
                 border-radius: 24px;
                 padding: 1.1rem 1.2rem;
                 margin-bottom: 0.9rem;
+                overflow: hidden;
                 box-shadow: 0 14px 34px rgba(5, 10, 20, 0.42);
+            }
+
+            .hero::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                padding: 1.25px;
+                border-radius: 24px;
+                background:
+                    linear-gradient(
+                        90deg,
+                        transparent 0%,
+                        rgba(191, 238, 255, 0.95) 16%,
+                        rgba(56, 189, 248, 0.66) 24%,
+                        transparent 40%
+                    ),
+                    linear-gradient(
+                        -90deg,
+                        transparent 0%,
+                        rgba(191, 238, 255, 0.85) 14%,
+                        rgba(34, 211, 238, 0.58) 22%,
+                        transparent 38%
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(34, 211, 238, 0.12) 0%,
+                        rgba(56, 189, 248, 0.22) 50%,
+                        rgba(34, 211, 238, 0.12) 100%
+                    );
+                background-size: 220% 100%, 220% 100%, 100% 100%;
+                animation: heroDualBeam 2.1s linear infinite;
+                -webkit-mask:
+                    linear-gradient(#000 0 0) content-box,
+                    linear-gradient(#000 0 0);
+                -webkit-mask-composite: xor;
+                mask:
+                    linear-gradient(#000 0 0) content-box,
+                    linear-gradient(#000 0 0);
+                mask-composite: exclude;
+                filter: drop-shadow(0 0 8px rgba(125, 241, 255, 0.42));
+                z-index: 0;
+            }
+
+            .hero::after {
+                content: "";
+                position: absolute;
+                inset: 1px;
+                border-radius: 22px;
+                background: linear-gradient(130deg, rgba(11,26,44,0.9) 0%, rgba(13,34,58,0.86) 55%, rgba(17,44,74,0.84) 100%);
+                z-index: 1;
+            }
+
+            .hero > * {
+                position: relative;
+                z-index: 2;
             }
 
             .hero-tag {
                 display: inline-block;
                 padding: 0.32rem 0.78rem;
                 border-radius: 999px;
-                background: rgba(34, 211, 238, 0.16);
-                color: #67e8f9;
+                background: linear-gradient(90deg, rgba(34, 211, 238, 0.18) 0%, rgba(56, 189, 248, 0.28) 50%, rgba(34, 211, 238, 0.18) 100%);
+                background-size: 220% 100%;
+                color: #bff6ff;
                 font-size: 0.96rem;
                 font-weight: 700;
                 letter-spacing: 0.04em;
                 margin-bottom: 0.45rem;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid rgba(125, 241, 255, 0.35);
+                text-shadow: 0 0 8px rgba(125, 241, 255, 0.45);
+                box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.18), 0 0 14px rgba(56, 189, 248, 0.22);
+                animation: heroTagGlow 2.4s ease-in-out infinite, heroTagFlow 3.2s linear infinite;
+            }
+
+            .hero-tag::after {
+                content: "";
+                position: absolute;
+                top: -20%;
+                left: -30%;
+                width: 26%;
+                height: 140%;
+                background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.9) 50%, transparent 100%);
+                filter: blur(0.4px);
+                transform: skewX(-18deg);
+                animation: heroTagSweep 2.8s linear infinite;
             }
 
             .hero-sub {
@@ -262,6 +339,32 @@ def _inject_modern_styles() -> None:
                 margin: 0;
                 text-align: center;
                 width: 100%;
+                position: relative;
+                display: inline-block;
+                font-weight: 700;
+                letter-spacing: 0.01em;
+                color: #dff4ff;
+                text-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
+            }
+
+            .hero-title .title-text {
+                display: inline-block;
+                position: relative;
+                background: linear-gradient(
+                    100deg,
+                    #f8fdff 0%,
+                    #d6f4ff 22%,
+                    #8fe7ff 48%,
+                    #d8f6ff 72%,
+                    #ffffff 100%
+                );
+                background-size: 220% 100%;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                color: transparent;
+                filter: drop-shadow(0 0 8px rgba(125, 241, 255, 0.28));
+                animation: heroTitleFlow 5.8s linear infinite, heroTitleGlow 3.1s ease-in-out infinite;
             }
 
             .stTextArea label p {
@@ -766,6 +869,63 @@ def _inject_modern_styles() -> None:
                 50% { transform: translate3d(calc(var(--dx, 160px) * 0.55), calc(var(--dy, 140px) * 0.55), 0) rotate(0.8deg); }
                 100% { transform: translate3d(var(--dx, 160px), var(--dy, 140px), 0) rotate(2deg); }
             }
+
+            @keyframes heroDualBeam {
+                0% {
+                    background-position: 220% 0, -160% 0, 0 0;
+                    opacity: 0.9;
+                }
+                50% {
+                    background-position: 40% 0, 20% 0, 0 0;
+                    opacity: 1;
+                }
+                100% {
+                    background-position: -160% 0, 220% 0, 0 0;
+                    opacity: 0.9;
+                }
+            }
+
+            @keyframes heroTagFlow {
+                from { background-position: 220% 0; }
+                to { background-position: -120% 0; }
+            }
+
+            @keyframes heroTagGlow {
+                0% {
+                    text-shadow: 0 0 6px rgba(125, 241, 255, 0.35);
+                    box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.14), 0 0 10px rgba(56, 189, 248, 0.16);
+                }
+                50% {
+                    text-shadow: 0 0 12px rgba(191, 238, 255, 0.72);
+                    box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.24), 0 0 20px rgba(56, 189, 248, 0.34);
+                }
+                100% {
+                    text-shadow: 0 0 6px rgba(125, 241, 255, 0.35);
+                    box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.14), 0 0 10px rgba(56, 189, 248, 0.16);
+                }
+            }
+
+            @keyframes heroTagSweep {
+                from { transform: translateX(0) skewX(-18deg); }
+                to { transform: translateX(560%) skewX(-18deg); }
+            }
+
+            @keyframes heroTitleFlow {
+                from { background-position: 220% 0; }
+                to { background-position: -120% 0; }
+            }
+
+            @keyframes heroTitleGlow {
+                0% {
+                    filter: drop-shadow(0 0 6px rgba(125, 241, 255, 0.2));
+                }
+                50% {
+                    filter: drop-shadow(0 0 13px rgba(191, 238, 255, 0.45));
+                }
+                100% {
+                    filter: drop-shadow(0 0 6px rgba(125, 241, 255, 0.2));
+                }
+            }
         </style>
         """,
         unsafe_allow_html=True,
@@ -860,7 +1020,7 @@ st.markdown(
     """
     <div class="hero">
         <div class="hero-tag">NEURALFACT TEAM PRODUCTION</div>
-        <h1 class="hero-title">Hệ Thống Kiểm Chứng Tin Giả</h1>
+        <h1 class="hero-title"><span class="title-text">Hệ Thống Kiểm Chứng Tin Giả</span></h1>
     </div>
     """,
     unsafe_allow_html=True,
