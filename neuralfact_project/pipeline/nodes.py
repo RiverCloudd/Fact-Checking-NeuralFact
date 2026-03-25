@@ -94,6 +94,21 @@ def clean_json_response(content: str) -> str:
     
     return content.strip()
 
+
+def _split_sentences_vi(text: str) -> list[str]:
+    """Fallback sentence splitter for Vietnamese without external NLP packages."""
+    normalized = re.sub(r"\s+", " ", str(text or "")).strip()
+    if not normalized:
+        return []
+
+    # Split by common sentence endings while keeping Vietnamese-friendly punctuation.
+    parts = re.split(r"(?<=[\.\!\?…])\s+|\n+", normalized)
+    sentences = [p.strip(" \t\r\n-•") for p in parts if p and p.strip()]
+
+    if len(sentences) <= 1:
+        return [normalized]
+    return sentences
+
 def decompose_node(state: FactCheckState):
     """Phase 1: Decompose - Phân tách văn bản thành các mệnh đề nguyên tử"""
     user_input = prompt_config.decompose_prompt.format(
@@ -129,14 +144,9 @@ def decompose_node(state: FactCheckState):
             print(f"Raw response: {response.content[:200]}...")
             continue
     
-    # Fallback: split by sentences if LLM fails
+    # Fallback: split by sentences if LLM fails (no external tokenizer required)
     if not claims:
-        import nltk
-        try:
-            nltk.data.find('tokenizers/punkt')
-        except LookupError:
-            nltk.download('punkt')
-        sentences = nltk.sent_tokenize(state["input_text"])
+        sentences = _split_sentences_vi(state["input_text"])
         claims = [s.strip() for s in sentences if len(s.strip()) >= 3]
     
     claims = claims[:max_claims]

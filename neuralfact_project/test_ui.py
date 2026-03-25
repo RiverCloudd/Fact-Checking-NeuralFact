@@ -12,10 +12,339 @@ def _display_evidence_text(ev) -> str:
         return str(ev.get("text", "")).strip()
     return str(ev or "").strip()
 
+
+def _inject_modern_styles() -> None:
+    st.markdown(
+        """
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+            :root {
+                --bg-a: #081425;
+                --bg-b: #0a1d36;
+                --bg-c: #102844;
+                --card: rgba(12, 29, 49, 0.82);
+                --text-main: #d9e9ff;
+                --text-soft: #9bb4d3;
+                --brand: #22d3ee;
+                --brand-deep: #06b6d4;
+                --ring: rgba(34, 211, 238, 0.28);
+            }
+
+            .stApp {
+                background:
+                    radial-gradient(circle at 10% 10%, rgba(45, 212, 191, 0.12) 0%, transparent 35%),
+                    radial-gradient(circle at 92% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 38%),
+                    linear-gradient(130deg, var(--bg-a) 0%, var(--bg-b) 52%, var(--bg-c) 100%);
+                color: var(--text-main);
+                font-family: 'IBM Plex Sans', sans-serif;
+            }
+
+            /* Remove Streamlit top white header/deploy strip */
+            header[data-testid="stHeader"] {
+                background: transparent;
+                border-bottom: none;
+                box-shadow: none;
+            }
+
+            [data-testid="stToolbar"] {
+                background: transparent !important;
+            }
+
+            [data-testid="stHeaderActionElements"] {
+                display: none;
+            }
+
+            h1, h2, h3, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2 {
+                font-family: 'Space Grotesk', sans-serif;
+                letter-spacing: -0.01em;
+            }
+
+            .block-container {
+                max-width: 1180px;
+                padding-top: 1.35rem;
+                padding-bottom: 2.2rem;
+            }
+
+            .hero {
+                background: linear-gradient(130deg, rgba(11,26,44,0.9) 0%, rgba(13,34,58,0.86) 55%, rgba(17,44,74,0.84) 100%);
+                border: 1px solid var(--ring);
+                border-radius: 24px;
+                padding: 1.1rem 1.2rem;
+                margin-bottom: 0.9rem;
+                box-shadow: 0 14px 34px rgba(5, 10, 20, 0.42);
+                animation: lift 520ms ease-out;
+            }
+
+            .hero-tag {
+                display: inline-block;
+                padding: 0.2rem 0.6rem;
+                border-radius: 999px;
+                background: rgba(34, 211, 238, 0.16);
+                color: #67e8f9;
+                font-size: 0.78rem;
+                font-weight: 600;
+                margin-bottom: 0.45rem;
+            }
+
+            .hero-sub {
+                color: var(--text-soft);
+                margin-top: 0.35rem;
+            }
+
+            [data-testid="stSidebar"] {
+                background: linear-gradient(180deg, #0b1c31 0%, #0f2744 54%, #123259 100%);
+                border-right: 1px solid rgba(103, 232, 249, 0.18);
+            }
+
+            [data-testid="stSidebar"] > div {
+                background: linear-gradient(180deg, #0b1c31 0%, #0f2744 54%, #123259 100%);
+            }
+
+            [data-testid="stSidebar"] * {
+                color: #d7e8ff;
+            }
+
+            [data-testid="stSidebar"] .stAlert {
+                background: rgba(15, 39, 68, 0.88);
+                border: 1px solid rgba(103, 232, 249, 0.2);
+                border-radius: 12px;
+            }
+
+            [data-testid="stSidebar"] [data-baseweb="select"] > div,
+            [data-testid="stSidebar"] .stTextInput input,
+            [data-testid="stSidebar"] .stNumberInput input,
+            [data-testid="stSidebar"] textarea {
+                background: rgba(9, 25, 44, 0.8) !important;
+                color: #dff1ff !important;
+                border: 1px solid rgba(103, 232, 249, 0.24) !important;
+                border-radius: 10px !important;
+                box-shadow: none !important;
+            }
+
+            /* Keep all main widgets in the same tech tone as verification text areas */
+            .stSelectbox [data-baseweb="select"] > div,
+            .stTextInput input,
+            .stNumberInput input {
+                background: rgba(10, 28, 47, 0.76) !important;
+                color: #e5f2ff !important;
+                border: 1px solid rgba(103, 232, 249, 0.28) !important;
+                border-radius: 12px !important;
+                box-shadow: none !important;
+            }
+
+            /* Increase field label contrast on dark background */
+            .stTextArea label p,
+            .stTextInput label p,
+            .stSelectbox label p,
+            .stNumberInput label p {
+                color: #e7f3ff !important;
+                font-weight: 600 !important;
+            }
+
+            /* Fix textarea border glitches by styling container and inner textarea separately */
+            .stTextArea [data-baseweb="textarea"] {
+                border: 1px solid rgba(103, 232, 249, 0.28) !important;
+                border-radius: 12px !important;
+                background: rgba(10, 28, 47, 0.76) !important;
+                box-shadow: none !important;
+                overflow: hidden !important;
+            }
+
+            .stTextArea [data-baseweb="textarea"] > textarea {
+                border: none !important;
+                background: transparent !important;
+                color: #e5f2ff !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            [data-testid="stTextArea"],
+            [data-testid="stTextArea"] > div,
+            [data-testid="stTextArea"] > div > div {
+                background: transparent !important;
+                border: none !important;
+            }
+
+            [data-testid="stTextArea"] [data-baseweb="base-input"] {
+                background: rgba(10, 28, 47, 0.76) !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+            }
+
+            .stSelectbox [data-baseweb="select"] > div:hover,
+            .stTextInput input:hover,
+            .stNumberInput input:hover,
+            .stTextArea [data-baseweb="textarea"]:hover {
+                border-color: rgba(125, 241, 255, 0.46) !important;
+            }
+
+            .stSelectbox [data-baseweb="select"] > div:focus-within,
+            .stTextInput input:focus,
+            .stNumberInput input:focus,
+            .stTextArea [data-baseweb="textarea"]:focus-within {
+                border-color: rgba(125, 241, 255, 0.65) !important;
+                box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.25) !important;
+                outline: none !important;
+            }
+
+            .stSelectbox svg,
+            .stTextInput svg,
+            .stNumberInput svg {
+                fill: #9fd8ff !important;
+            }
+
+            .stCheckbox label,
+            .stCheckbox label p,
+            .stCheckbox span {
+                color: #eaf5ff !important;
+                font-weight: 600 !important;
+            }
+
+            .stCheckbox input[type="checkbox"] {
+                accent-color: #22d3ee;
+            }
+
+            [data-testid="stSidebar"] hr {
+                border-color: rgba(103, 232, 249, 0.2);
+            }
+
+            .stat-card {
+                background: var(--card);
+                border: 1px solid rgba(103, 232, 249, 0.22);
+                border-radius: 16px;
+                padding: 0.7rem 0.85rem;
+                box-shadow: 0 8px 20px rgba(4, 9, 17, 0.42);
+                margin-bottom: 0.45rem;
+            }
+
+            .stat-label {
+                color: #9db7d8;
+                font-size: 0.82rem;
+            }
+
+            .stat-value {
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 1.2rem;
+                font-weight: 700;
+                margin-top: 0.1rem;
+                color: #e4f1ff;
+            }
+
+            /* Make Streamlit metric blocks in tabs clearer on dark background */
+            [data-testid="stMetric"] {
+                background: rgba(9, 25, 44, 0.72);
+                border: 1px solid rgba(103, 232, 249, 0.24);
+                border-radius: 14px;
+                padding: 0.5rem 0.7rem;
+            }
+
+            [data-testid="stMetricLabel"] p {
+                color: #b9d3f0 !important;
+                font-weight: 600 !important;
+            }
+
+            [data-testid="stMetricValue"] {
+                color: #f0f8ff !important;
+                font-weight: 700 !important;
+            }
+
+            [data-testid="stMetricDelta"] {
+                color: #93e5ff !important;
+            }
+
+            .stTabs [data-baseweb="tab-list"] {
+                gap: 0.4rem;
+            }
+
+            .stTabs [data-baseweb="tab"] {
+                border-radius: 999px;
+                background: rgba(13, 35, 59, 0.84);
+                color: #c6dcf7;
+                border: 1px solid rgba(103, 232, 249, 0.14);
+                padding: 0.45rem 0.8rem;
+            }
+
+            .stTabs [aria-selected="true"] {
+                background: rgba(34, 211, 238, 0.2) !important;
+                border-color: rgba(103, 232, 249, 0.5) !important;
+                color: #effbff !important;
+            }
+
+            div.stButton > button {
+                border-radius: 12px;
+                border: 0;
+                background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+                color: #fff;
+                font-weight: 700;
+                letter-spacing: 0.01em;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+                box-shadow: 0 12px 26px rgba(8, 47, 73, 0.52);
+                border: 1px solid rgba(147, 235, 255, 0.4);
+            }
+
+            div.stButton > button:hover {
+                transform: translateY(-1px);
+                filter: brightness(1.08);
+                box-shadow: 0 14px 30px rgba(8, 47, 73, 0.6);
+            }
+
+            div.stButton > button[data-testid="baseButton-primary"],
+            div.stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #22d3ee 0%, #0284c7 100%) !important;
+                border: 1px solid rgba(186, 244, 255, 0.6) !important;
+                box-shadow: 0 0 0 1px rgba(125, 241, 255, 0.2), 0 16px 34px rgba(2, 49, 78, 0.62) !important;
+            }
+
+            [data-testid="stTextArea"] textarea {
+                border-radius: 0 !important;
+                border: none !important;
+                background: transparent !important;
+                color: #e5f2ff !important;
+            }
+
+            @keyframes lift {
+                from { opacity: 0; transform: translateY(8px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            @media (max-width: 768px) {
+                .block-container {
+                    padding-left: 0.9rem;
+                    padding-right: 0.9rem;
+                }
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _render_stat_card(label: str, value: str) -> None:
+    st.markdown(
+        f"""
+        <div class="stat-card">
+            <div class="stat-label">{label}</div>
+            <div class="stat-value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 st.set_page_config(page_title="NeuralFact - Component Testing", layout="wide")
 
-st.title("🧪 NeuralFact Component Testing")
-st.markdown("Test từng bước của pipeline với giao diện trực quan")
+_inject_modern_styles()
+
+st.markdown(
+    """
+    <div class="hero">
+        <div class="hero-tag">NEURALFACT LAB</div>
+        <h1 style="margin:0;">Component Testing Console</h1>
+        <p class="hero-sub">Theo dõi từng node trong pipeline kiểm chứng với giao diện gọn, trực quan và hiện đại.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Initialize session state
 if 'state' not in st.session_state:
@@ -64,17 +393,21 @@ with st.sidebar:
     st.divider()
     
     # Current tokens
-    st.metric("Input Tokens", st.session_state.state['prompt_tokens'])
-    st.metric("Output Tokens", st.session_state.state['completion_tokens'])
+    _render_stat_card("Input Tokens", str(st.session_state.state['prompt_tokens']))
+    _render_stat_card("Output Tokens", str(st.session_state.state['completion_tokens']))
     
     total_tokens = st.session_state.state['prompt_tokens'] + st.session_state.state['completion_tokens']
     if total_tokens > 0:
         input_cost = (st.session_state.state['prompt_tokens'] / 1_000_000) * PRICE_1M_INPUT_TOKENS
         output_cost = (st.session_state.state['completion_tokens'] / 1_000_000) * PRICE_1M_OUTPUT_TOKENS
         total_cost = input_cost + output_cost
-        st.metric("Total Cost", f"${total_cost:.6f}")
+        _render_stat_card("Total Cost", f"${total_cost:.6f}")
     
-    if st.button("🔄 Reset State"):
+    col_left, col_center, col_right = st.columns([1, 2, 1])
+    with col_center:
+        reset_clicked = st.button("🔄 Reset State", use_container_width=True)
+
+    if reset_clicked:
         st.session_state.state = {
             "input_text": "",
             "claims": [],
