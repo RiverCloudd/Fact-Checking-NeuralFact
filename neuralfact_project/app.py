@@ -1094,7 +1094,7 @@ if run_check:
                             '<div class="count-strip">'
                             f'<div class="count-chip true">{ICON_CHECK} Đúng: {counts.get("true", 0)}</div>'
                             f'<div class="count-chip false">{ICON_FAIL} Sai: {counts.get("false", 0)}</div>'
-                            f'<div class="count-chip nei">{ICON_WARN} NEI: {counts.get("nei", 0)}</div>'
+                            # f'<div class="count-chip nei">{ICON_WARN} NEI: {counts.get("nei", 0)}</div>'
                             '</div>'
                         ),
                         unsafe_allow_html=True,
