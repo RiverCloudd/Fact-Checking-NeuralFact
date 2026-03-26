@@ -1,25 +1,26 @@
 import os
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
-PRICE_1M_INPUT_TOKENS = 0.28
-PRICE_1M_OUTPUT_TOKENS = 0.42
+PRICE_1M_INPUT_TOKENS = 0.5
+PRICE_1M_OUTPUT_TOKENS = 3
 
 def get_llm():
-    """Khởi tạo mô hình DeepSeek"""
-    request_timeout = float(os.getenv("LLM_TIMEOUT_SECONDS", "12"))
-    max_tokens = int(os.getenv("LLM_MAX_TOKENS", "350"))
+    """Khoi tao mo hinh Gemini."""
+    timeout = float(os.getenv("LLM_TIMEOUT_SECONDS", "12"))
     temperature = float(os.getenv("LLM_TEMPERATURE", "0"))
+    model_name = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
 
-    return ChatOpenAI(
-        base_url="https://api.deepseek.com/v1",
-        api_key=DEEPSEEK_API_KEY,
-        model="deepseek-chat",
-        request_timeout=request_timeout,
-        max_tokens=max_tokens,
+    if not GEMINI_API_KEY:
+        raise ValueError("Missing GEMINI_API_KEY or GOOGLE_API_KEY in environment")
+
+    return ChatGoogleGenerativeAI(
+        model=model_name,
+        google_api_key=GEMINI_API_KEY,
+        timeout=timeout,
         temperature=temperature
     )

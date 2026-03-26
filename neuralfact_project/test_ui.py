@@ -377,13 +377,13 @@ with st.sidebar:
     
     # Check API keys
     import os
-    deepseek_key = os.getenv("DEEPSEEK_API_KEY")
+    gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     serper_key = os.getenv("SERPER_API_KEY")
     
-    if deepseek_key:
-        st.success(f"✅ DeepSeek: {deepseek_key[:10]}...")
+    if gemini_key:
+        st.success(f"✅ Gemini: {gemini_key[:10]}...")
     else:
-        st.error("❌ DeepSeek API key missing")
+        st.error("❌ Gemini API key missing")
     
     if serper_key:
         st.success(f"✅ Serper: {serper_key[:10]}...")

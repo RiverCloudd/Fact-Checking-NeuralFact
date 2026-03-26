@@ -72,18 +72,23 @@ qgen_prompt: |
 
 
 verify_prompt: |
-  Nhiệm vụ của bạn là đánh giá độ chính xác của một [Mệnh đề] được trích xuất từ [Ngữ cảnh gốc], dựa trên [Bằng chứng] đi kèm.
-  Hãy đọc kỹ bằng chứng. Nếu bằng chứng thiếu chi tiết, không có nghĩa là mệnh đề sai. Hãy phân biệt rõ ràng giữa phần thông tin bị sai lệch và phần thông tin được bằng chứng ủng hộ.
+  Nhiệm vụ của bạn là đóng vai trò một giám khảo khách quan, đánh giá độ chính xác của [Mệnh đề] CHỈ DỰA VÀO [Bằng chứng] được cung cấp.
+  TUYỆT ĐỐI KHÔNG sử dụng kiến thức nền của bạn. Hãy coi [Bằng chứng] là sự thật tuyệt đối.
 
-  Phản hồi bằng JSON với 4 khóa sau:
-  - "reasoning": Giải thích ngắn gọn dựa trên bằng chứng, tối đa 25 từ.
-  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu thiếu căn cứ hoặc sai, chỉ ra điểm chưa được chứng minh hoặc điểm sai.
-  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu thiếu căn cứ hoặc sai, cung cấp câu sửa thận trọng hơn.
-  - "factuality": chỉ trả true hoặc false. Nếu không đủ căn cứ, trả false.
+  Quy tắc đánh giá:
+  1. Nếu bằng chứng trực tiếp xác nhận, hoặc chứa các từ khóa đồng nghĩa chứng minh [Mệnh đề] là đúng -> factuality: true.
+  2. Việc bằng chứng là các đoạn trích ngắn (snippets) hoặc tiêu đề câu hỏi không làm giảm tính xác thực nếu nội dung bên trong nó ủng hộ mệnh đề.
+  3. Chỉ trả về false khi bằng chứng trực tiếp phủ nhận [Mệnh đề], hoặc hoàn toàn không liên quan.
+
+  Phản hồi BẮT BUỘC bằng định dạng JSON với 4 khóa sau:
+  - "reasoning": Trích dẫn đoạn text cụ thể từ bằng chứng ủng hộ hoặc bác bỏ mệnh đề (tối đa 30 từ).
+  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu sai, chỉ ra điểm mâu thuẫn.
+  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu sai, sửa lại cho đúng với bằng chứng.
+  - "factuality": true hoặc false (boolean).
 
   Input:
   [Ngữ cảnh gốc]: {original_doc}
   [Mệnh đề]: {claim}
   [Bằng chứng]: {evidence}
 
-  Output:
+  Output JSON:

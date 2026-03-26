@@ -10,6 +10,27 @@ import re
 llm = get_llm()
 
 
+def _extract_token_usage(response) -> tuple[int, int]:
+    """Return (prompt_tokens, completion_tokens) across providers."""
+    prompt_tokens = 0
+    completion_tokens = 0
+
+    # Gemini/LangChain pattern
+    usage_metadata = getattr(response, "usage_metadata", None)
+    if isinstance(usage_metadata, dict):
+        prompt_tokens += int(usage_metadata.get("input_tokens", 0) or 0)
+        completion_tokens += int(usage_metadata.get("output_tokens", 0) or 0)
+
+    # OpenAI/DeepSeek-compatible pattern
+    response_metadata = getattr(response, "response_metadata", None)
+    if isinstance(response_metadata, dict):
+        token_usage = response_metadata.get("token_usage", {}) or {}
+        prompt_tokens += int(token_usage.get("prompt_tokens", 0) or 0)
+        completion_tokens += int(token_usage.get("completion_tokens", 0) or 0)
+
+    return prompt_tokens, completion_tokens
+
+
 def _evidence_to_text(item) -> str:
     if isinstance(item, dict):
         text = str(item.get("text", "")).strip()
@@ -67,7 +88,36 @@ def _build_verify_context(input_text: str, claim: str) -> str:
     del claim
     return re.sub(r"\s+", " ", (input_text or "")).strip()
 
-def clean_json_response(content: str) -> str:
+def _content_to_text(content) -> str:
+    """Normalize LLM content into plain text for downstream JSON parsing."""
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                text = item.get("text")
+                if text is not None:
+                    parts.append(str(text))
+                else:
+                    parts.append(json.dumps(item, ensure_ascii=False))
+            else:
+                parts.append(str(item))
+        return "\n".join(p for p in parts if p).strip()
+
+    if isinstance(content, dict):
+        text = content.get("text")
+        if text is not None:
+            return str(text)
+        return json.dumps(content, ensure_ascii=False)
+
+    return str(content or "")
+
+
+def clean_json_response(content) -> str:
     """Clean LLM response để parse JSON
     
     LLM có thể trả về:
@@ -75,7 +125,7 @@ def clean_json_response(content: str) -> str:
     - Text thừa trước/sau JSON
     - Single quotes thay vì double quotes
     """
-    content = content.strip()
+    content = _content_to_text(content).strip()
     
     # Remove markdown fence
     if content.startswith("```"):
@@ -131,11 +181,10 @@ def decompose_node(state: FactCheckState):
             result = json.loads(cleaned_content)
             claims = result.get("claims", [])
             
-            # Track tokens
-            if hasattr(response, 'response_metadata') and response.response_metadata:
-                usage = response.response_metadata.get('token_usage', {})
-                prompt_tokens += usage.get('prompt_tokens', 0)
-                completion_tokens += usage.get('completion_tokens', 0)
+            # Track tokens across Gemini/OpenAI-compatible metadata
+            used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
+            prompt_tokens += used_prompt_tokens
+            completion_tokens += used_completion_tokens
             
             if isinstance(claims, list) and len(claims) > 0:
                 break
@@ -191,10 +240,9 @@ def checkworthy_node(state: FactCheckState):
             if isinstance(parsed, dict):
                 llm_result = parsed
 
-            if hasattr(response, 'response_metadata') and response.response_metadata:
-                usage = response.response_metadata.get('token_usage', {})
-                prompt_tokens += usage.get('prompt_tokens', 0)
-                completion_tokens += usage.get('completion_tokens', 0)
+            used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
+            prompt_tokens += used_prompt_tokens
+            completion_tokens += used_completion_tokens
 
             if llm_result is not None:
                 break
@@ -305,10 +353,9 @@ def verify_node(state: FactCheckState):
                 cleaned_content = clean_json_response(response.content)
                 verification_result = json.loads(cleaned_content)
 
-                if hasattr(response, 'response_metadata') and response.response_metadata:
-                    usage = response.response_metadata.get('token_usage', {})
-                    prompt_tokens += usage.get('prompt_tokens', 0)
-                    completion_tokens += usage.get('completion_tokens', 0)
+                used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
+                prompt_tokens += used_prompt_tokens
+                completion_tokens += used_completion_tokens
 
                 if isinstance(verification_result, dict) and "factuality" in verification_result:
                     break
