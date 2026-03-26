@@ -1,104 +1,291 @@
-site_name,url,bias_rating,factual_reporting_rating
-2Sao, https://2sao.vn/, 0, MIXED
-24h, https://www.24h.com.vn/, 0, VERY LOW
-An ninh Thủ đô, https://anninhthudo.vn/, 0, HIGH
-Báo ảnh Dân tộc & Miền núi, https://dantocmiennui.baotintuc.vn/, 0, HIGH
-Báo Ảnh Việt Nam, https://vietnam.vnanet.vn/vietnamese/, 0, HIGH
-Báo Đà Nẵng, https://baodanang.vn/, 0, MIXED
-Báo Đầu tư, https://baodautu.vn/, 0, HIGH
-Báo Tin tức, https://baotintuc.vn/, 0, HIGH
-Bnews, https://bnews.vn/, 0, HIGH
-Bộ Công an, https://bocongan.gov.vn/, 0, VERY HIGH
-Bộ Tư pháp, https://moj.gov.vn/, 0, VERY HIGH
-Bộ Quốc phòng, https://www.mod.gov.vn/, 0, VERY HIGH
-Bộ Y tế, https://moh.gov.vn/, 0, VERY HIGH
-Chính phủ Việt Nam, https://chinhphu.vn/, 0, VERY HIGH
-Công an nhân dân, https://cand.com.vn/, 0, VERY HIGH
-Dân trí, https://dantri.com.vn/, 0, HIGH
-Dân Việt, https://danviet.vn/, 0, HIGH
-Đại Đoàn Kết, https://daidoanket.vn/, 0, HIGH
-Đẹp, https://dep.com.vn/, 0, HIGH
-Elle Việt Nam, https://www.elle.vn/, 0, HIGH
-Forbes Việt Nam, https://forbes.vn/, 0, HIGH
-Gia đình & Xã hội, https://giadinh.suckhoedoisong.vn/, 0, HIGH
-Xây dựng, https://baoxaydung.vn/, 0, HIGH
-Hànộimới, https://hanoimoi.com.vn/, 0, HIGH
-Harper's Bazaar Vietnam, https://bazaarvietnam.vn/, 0, HIGH
-Hehemetal, https://hehemetal.com/, 0, HIGH
-Huế ngày nay, https://huengaynay.vn/, 0, MIXED
-Kênh 14, https://kenh14.vn/, 0, VERY LOW
-Kiểm sát, https://kiemsat.vn/, 0, VERY HIGH
-Tạp chí điện tử Kinh tế chứng khoán Việt Nam, https://kinhtechungkhoan.vn/, 0, HIGH
-Kinh tế Sài Gòn, https://thesaigontimes.vn/, 0, HIGH
-Lao Động, https://laodong.vn/, 0, HIGH
-Le Courrier du Vietnam, https://lecourrier.vn/, 0, HIGH
-L'Officiel Vietnam, https://www.lofficielvietnam.com/, 0, HIGH
-Luật Khoa tạp chí, https://www.luatkhoa.com/, 0, VERY HIGH
-Mặt trận Tổ quốc Việt Nam, https://mattran.org.vn/, 0, VERY HIGH
-Người Lao Động, https://nld.com.vn/, 0, HIGH
-Người Việt, https://www.nguoi-viet.com/, 0, HIGH
-Nhạc Xưa Blog, https://nhacxua.vn/, 0, HIGH
-Nhân Dân, https://nhandan.vn/, 0, VERY HIGH
-Nông nghiệp và Môi trường, https://nongnghiepmoitruong.vn/, 0, HIGH
-Pháp luật Việt Nam, https://baophapluat.vn/, 0, VERY HIGH
-Phụ Nữ Việt Nam, https://www.phunuvietnam.vn/, 0, HIGH
-Quốc hội Việt Nam, https://www.quochoi.vn/, 0, VERY HIGH
-RFI tiếng Việt, https://www.rfi.fr/vi/, 0, HIGH
-Sài Gòn Giải Phóng, https://www.sggp.org.vn/, 0, VERY HIGH
-Saostar, https://www.saostar.vn/, 0, VERY LOW
-Sputnik tiếng Việt, https://kevesko.vn/, 0, VERY LOW
-Sức khỏe và Đời sống, https://suckhoedoisong.vn/, 0, HIGH
-Tạp chí Công Thương, https://tapchicongthuong.vn/, 0, HIGH
-Tạp chí Kinh tế - Tài chính, https://tapchikinhtetaichinh.vn/, 0, HIGH
-Thanh Niên, https://thanhnien.vn/, 0, HIGH
-Thế giới và Việt Nam, https://baoquocte.vn/, 0, HIGH
-Thể thao & Văn hóa, https://thethaovanhoa.vn/, 0, HIGH
-Thời báo Ngân hàng, https://thoibaonganhang.vn/, 0, HIGH
-Thời báo Tài chính Việt Nam, https://thoibaotaichinhvietnam.vn/, 0, HIGH
-Thư viện pháp luật, https://thuvienphapluat.vn/, 0, HIGH
-Tiền phong, https://www.tienphong.vn/, 0, HIGH
-Tổ quốc, https://toquoc.vn/, 0, HIGH
-Tri thức, https://trithucvn2.net/, 0, MIXED
-Tuổi Trẻ, https://tuoitre.vn/, 0, HIGH
-Văn Hóa, https://baovanhoa.vn/, 0, HIGH
-Viện kiểm sát nhân dân tối cao, https://vksndtc.gov.vn/, 0, VERY HIGH
-Vietcetera, https://vietcetera.com/, 0, LOW
-Vietnam Law & Legal Forum, https://vietnamlawmagazine.vn/, 0, HIGH
-VietNamNet, https://vietnamnet.vn/, 0, HIGH
-Việt Nam News, https://vietnamnews.vn/, 0, HIGH
-VietnamPlus, https://www.vietnamplus.vn/, 0, HIGH
-VnEconomy, https://vneconomy.vn/, 0, HIGH
-VnExpress, https://vnexpress.net/, 0, VERY HIGH
-VOA tiếng Việt, https://www.voatiengviet.com/, 0, HIGH
-VOV, https://vov.vn/, 0, HIGH
-VTC News, https://vtcnews.vn/, 0, HIGH
-VTV, https://vtvgo.vn/, 0, HIGH
-Yan News, https://yan.vn/, 0, LOW
-almanach.be, https://almanach.be/, 3, VERY LOW
-almanachdegotha.org, https://almanachdegotha.org/, 3, VERY LOW
-angelfire.com/realm/gotha, http://angelfire.com/realm/gotha, 3, VERY LOW
-chivalricorders.org, https://chivalricorders.org/, 4, VERY LOW
-cracroftspeerage.co.uk, https://cracroftspeerage.co.uk/, 3, VERY LOW
-englishmonarchs.co.uk, https://www.englishmonarchs.co.uk/, 3, VERY LOW
-jacobite.ca, https://jacobite.ca/, 5, VERY LOW
-royalark.net, http://www.royalark.net/, 3, VERY LOW
-thepeerage.com, http://www.thepeerage.com/, 2, VERY LOW
-worldstatesmen.org, http://www.worldstatesmen.org/, 1, VERY LOW
-dan-news.info, https://dan-news.info/, 22, VERY LOW
-news-front.info, https://news-front.info/, 24, VERY LOW
-rusdialog.ru, https://rusdialog.ru/, 20, VERY LOW
-southfront.org, https://southfront.org/, 24, VERY LOW
-topwar.ru, https://topwar.ru/, 22, VERY LOW
-ukraina.ru, https://ukraina.ru/, 24, VERY LOW
-veteransnewsnow.com, https://veteransnewsnow.com/, 18, VERY LOW
-báo mới, https://baomoi.com/, 0, HIGH
-việt báo, https://vietbao.vn/, 0, HIGH
-Quân đội nhân dân, https://www.qdnd.vn/, 0, VERY HIGH
-Znews, https://znews.vn/, 0, HIGH
-Soha, https://soha.vn/, 0, VERY LOW
-CafeF, https://cafef.vn/, 0, HIGH
-Eva, https://eva.vn/, 0, HIGH
-aFamily, https://afamily.vn/, 0, HIGH
-GenK, https://genk.vn/, 0, VERY LOW
-Báo Tri thức và Cuộc sống, https://kienthuc.net.vn/, 0, HIGH
-Tiktok, https://www.tiktok.com/, 0, LOW
+site_name,url
+1 Thế Giới, 1thegioi.vn
+24h, 24h.com.vn
+Afamily, afamily.vn
+An ninh Thủ đô, anninhthudo.vn
+Báo An Giang, baoangiang.com.vn
+Báo Ấp Bắc, baoapbac.vn
+Báo Bắc Giang, baobacgiang.vn
+Báo Bắc Kạn, baobackan.vn
+Báo Bạc Liêu, baobaclieu.vn
+Báo Bắc Ninh, baobacninh.com.vn
+Báo Bà Rịa Vũng Tàu, baobariavungtau.com.vn
+Báo Bình Định, baobinhdinh.vn
+Báo Bình Dương, baobinhduong.vn
+Báo Bình Phước, baobinhphuoc.com.vn
+Báo Bình Thuận, baobinhthuan.com.vn
+Báo Cà Mau, baocamau.vn
+Báo Cần Thơ, baocantho.com.vn
+Báo Cao Bằng, baocaobang.vn
+Báo Chính phủ, baochinhphu.vn
+Báo Đắk Lắk, baodaklak.vn
+Báo Đắk Nông, baodaknong.vn
+Báo Đà Nẵng, baodanang.vn
+Báo Đấu thầu, baodauthau.vn
+Báo Đầu tư, baodautu.vn
+Báo Điện Biên Phủ, baodienbienphu.com.vn
+Báo Doanh nhân Online, baodoanhnhanonline.com
+Báo Đồng Khởi, baodongkhoi.vn
+Báo Đồng Nai, baodongnai.com.vn
+Báo Đồng Tháp, baodongthap.com.vn
+Báo Gia Lai, baogialai.com.vn
+Báo Giao thông, baogiaothong.vn
+Báo Hà Giang, baohagiang.vn
+Báo Hải Dương, baohaiduong.vn
+Báo Hải Phòng, baohaiphong.com.vn
+Báo Hà Nam, baohanam.com.vn
+Báo Hà Tĩnh, baohatinh.vn
+Báo Hậu Giang, baohaugiang.com.vn
+Báo Hòa Bình, baohoabinh.com.vn
+Báo Hưng Yên, baohungyen.vn
+Báo Khánh Hòa, baokhanhhoa.vn
+Báo Kiên Giang, baokiengiang.vn
+Báo Lai Châu, baolaichau.vn
+Báo Lâm Đồng, baolamdong.vn
+Báo Lạng Sơn, baolangson.vn
+Báo Long An, baolongan.vn
+Báo Mới, baomoi.com
+Báo Nam Định, baonamdinh.vn
+Báo Nghệ An, baonghean.vn
+Báo Ninh Bình, baoninhbinh.org.vn
+Báo Pháp luật, baophapluat.vn
+Báo Phụ nữ Thủ đô, baophunuthudo.vn
+Báo Phú Thọ, baophutho.vn
+Báo Phú Yên, baophuyen.vn
+Báo Quảng Bình, baoquangbinh.vn
+Báo Quảng Nam, baoquangnam.vn
+Báo Quảng Ngãi, baoquangngai.vn
+Báo Quảng Ninh, baoquangninh.vn
+Báo Quảng Trị, baoquangtri.vn
+Báo Quốc tế, baoquocte.vn
+Báo Sóc Trăng, baosoctrang.org.vn
+Báo Sơn La, baosonla.org.vn
+Báo Tài nguyên & Môi trường, baotainguyenmoitruong.vn
+Báo Tây Ninh, baotayninh.vn
+Báo Thái Bình, baothaibinh.com.vn
+Báo Thái Nguyên, baothainguyen.vn
+Báo Thanh Hóa, baothanhhoa.vn
+Báo Thừa Thiên Huế, baothuathienhue.vn
+Báo Tin tức, baotintuc.vn
+Báo Tiếng nói Việt Nam, baotnvn.vn
+Báo Trà Vinh, baotravinh.vn
+Báo Tuyên Quang, baotuyenquang.com.vn
+Báo Văn hóa, baovanhoa.vn
+Bảo vệ Công lý, baove.congly.vn
+Bảo vệ Pháp luật, baovephapluat.vn
+Báo Vĩnh Long, baovinhlong.com.vn
+Báo Vĩnh Phúc, baovinhphuc.com.vn
+Báo Xây dựng, baoxaydung.com.vn
+Báo Yên Bái, baoyenbai.com.vn
+Bazaar Vietnam, bazaarvietnam.vn
+Bizhub, bizhub.vn
+Bnews, bnews.vn
+Bóng đá, bongda.com.vn
+Bóng đá Plus, bongdaplus.vn
+Công an Đà Nẵng, cadn.com.vn
+CafeBiz, cafebiz.vn
+CafeF, cafef.vn
+CafeLand, cafeland.vn
+Công an Nhân dân, cand.com.vn
+Chuyển động Thị trường, chuyendongthitruong.vn
+Cơ hội Giao thương, cohoigiaothuong.vn
+Công an TP.HCM, congan.com.vn
+Công luận, congluan.vn
+Công lý, congly.vn
+Công thương, congthuong.vn
+Cosmolife, cosmolife.vn
+Đại biểu Nhân dân, daibieunhandan.vn
+Đại đoàn kết, daidoanket.vn
+Dân sinh (Dân trí), dansinh.dantri.com.vn
+Dân trí, dantri.com.vn
+Dân Việt, danviet.vn
+Đầu tư Thương mại, daututhuongmai.vn
+Đầu tư Việt Nam, dautuvietnam.com.vn
+Deluxe Vietnam, deluxevietnam.com
+Đẹp, dep.com.vn
+Đẹp và Phong cách, depvaphongcach.com
+Diễn đàn Doanh nghiệp, diendandoanhnghiep.vn
+Điện tử Ứng dụng, dientuungdung.vn
+Doanh nghiệp Cuộc sống, doanhnghiepcuocsong.vn
+Doanh nghiệp Hội nhập, doanhnghiephoinhap.vn
+Doanh nghiệp Tiếp thị, doanhnghieptiepthi.vn
+Doanh nghiệp và Đầu tư, doanhnghiepvadautu.info.vn
+Doanh nghiệp và Thương mại, doanhnghiepvathuongmai.vn
+Doanh nghiệp VN, doanhnghiepvn.vn
+Doanh nhân Đời sống, doanhnhandoisong.vn
+Doanh nhân Hội nhập, doanhnhanhoinhap.vn
+Doanh nhân Plus, doanhnhanplus.vn
+Doanh nhân Sài Gòn, doanhnhansaigon.vn
+Doanh nhân Thị trường, doanhnhanthitruong.vn
+Đời sống Pháp luật, doisongphapluat.com.vn
+Đời sống Tiêu dùng, doisongtieudung.vn
+Đầu tư Tài chính SGGP, dttc.sggp.org.vn
+Elle, elle.vn
+Elleman, elleman.vn
+En Diễn đàn Doanh nghiệp, en.diendandoanhnghiep.vn
+En VnEconomy, en.vneconomy.vn
+English The Saigon Times, english.thesaigontimes.vn
+Eva, eva.vn
+E VnExpress, evnexpress.net
+Forbes, forbes.vn
+GenK, genk.vn
+Gia đình Sức khỏe Đời sống, giadinh.suckhoedoisong.vn
+Gia đình Online, giadinhonline.vn
+Gia đình và Pháp luật, giadinhvaphapluat.vn
+Giáo dục, giaoduc.edu.vn
+Giáo dục Net, giaoduc.net.vn
+Giáo dục Thời đại, giaoducthoidai.vn
+Giáo dục Thủ đô, giaoducthudo.giaoducthoidai.vn
+Golf and Life, golfandlife.com.vn
+Hải quan Online, haiquanonline.com.vn
+Hà Nội Mới, hanoimoi.vn
+Hà Nội Ngày Nay, hanoingaynay.vn
+Herworld VN, herworldvn.com
+Hoa Học Trò, hoahoctro.tienphong.vn
+Infonet, infonet.vietnamnet.vn
+Invest Global, investglobal.vn
+Kênh 14, kenh14.vn
+Kết nối Doanh nhân, ketnoidoanhnhan.com.vn
+Khoa học Đời sống, khoahocdoisong.vn
+Khoa học Phát triển, khoahocphattrien.vn
+Khoa học Phổ thông, khoahocphothong.vn
+Kiến thức, kienthuc.net.vn
+Kinh doanh Đời sống, kinhdoanhdoisong.vn
+Kinh doanh Net, kinhdoanhnet.vn
+Kinh doanh Plus, kinhdoanhplus.vn
+Kinh doanh và Tiếp thị, kinhdoanhvatiepthi.vn
+Kinh tế Chứng khoán, kinhtechungkhoan.vn
+Kinh tế Đời sống, kinhtedoisong.vn
+Kinh tế Đô thị, kinhtedothi.vn
+Kinh tế Môi trường, kinhtemoitruong.vn
+Kinh tế News, kinhtenews.com
+Kinh tế Nông thôn, kinhtenongthon.vn
+Kinh tế và Dự báo, kinhtevadubao.vn
+Làm Cha Mẹ, lamchame.com
+Lao động, laodong.vn
+Lao động Thủ đô, laodongthudo.vn
+Le Courrier, lecourrier.vn
+Megafun, megafun.vn
+Môi trường và Đô thị, moitruongvadothi.vn
+Mực Tím, muctim.tuoitre.vn
+Ngày Mới Online, ngaymoionline.com.vn
+Ngày Nay, ngaynay.vn
+Nghe Nhìn Việt Nam, nghenhinvietnam.vn
+Ngôi Sao, ngoisao.vnexpress.net
+Người Đô thị, nguoidothi.net.vn
+Người Đưa Tin, nguoiduatin.vn
+Người Hà Nội, nguoihanoi.vn
+Người Quan Sát, nguoiquansat.vn
+Nhà Đầu tư, nhadautu.vn
+Nhân Dân, nhandan.vn
+Nhà Quản lý, nhaquanly.vn
+Nhịp cầu Đầu tư, nhipcaudautu.vn
+Nhịp sống Đô thị, nhipsongdothi.vn
+Nhịp sống Kinh doanh, nhipsongkinhdoanh.vn
+Nhịp sống Kinh tế, nhipsongkinhte.toquoc.vn
+Người Lao động, nld.com.vn
+Nông nghiệp, nongnghiep.vn
+Nông thôn Việt, nongthonviet.com.vn
+NSS, nss.vn
+PC World, pcworld.com
+Petrotimes, petrotimes.vn
+Pháp luật Plus, phapluatplus.vn
+Pháp luật Xã hội, phapluatxahoi.kinhtedothi.vn
+Phụ nữ Hiện đại, phunuhiendai.vn
+Phụ nữ Mới, phunumoi.net.vn
+Phụ nữ Net, phununet.net
+Phụ nữ Online, phunuonline.vn
+Phụ nữ Việt Nam, phunuvietnam.vn
+PLO, plo.vn
+Quân đội Nhân dân, qdnd.vn
+Quản lý Thị trường, qltt.vn
+Robb Report, robbreport.com.vn
+Saigon News, saigonnews.vn
+Sài Gòn Giải Phóng, sggp.org.vn
+Sài Gòn Tiếp thị, sgtiepthi.vn
+Soha, soha.vn
+Stockbiz, stockbiz.vn
+Sức khỏe Đời sống, suckhoedoisong.vn
+Sức khỏe Môi trường, suckhoemoitruong.com.vn
+Sinh viên Việt Nam, svvn.tienphong.vn
+Tài chính Doanh nghiệp, taichinhdoanhnghiep.net.vn
+Tài chính Xanh, taichinhxanh.net
+Tạp chí Công thương, tapchicongthuong.vn
+Tạp chí Giao thông, tapchigiaothong.vn
+Tạp chí Lao động, tapchilaodong.vn
+Tạp chí Mặt trận, tapchimattran.vn
+Tạp chí Môi trường, tapchimoitruong.vn
+Tạp chí Tài chính, tapchitaichinh.vn
+Tạp chí Thời trang trẻ, tapchithoitrangtre.net
+Thanh Niên, thanhnien.vn
+Thanh Niên Việt, thanhnienviet.vn
+Thanh tra, thanhtra.com.vn
+Thế giới Hội nhập, thegioihoinhap.vn
+Thế giới Tiếp thị, thegioitiepthi.danviet.vn
+Thế giới Văn hóa, thegioivanhoa.net
+The Investor, theinvestor.vn
+The Saigon Times, thesaigontimes.vn
+Thể thao SGGP, thethao.sggp.org.vn
+Thể thao Văn hóa, thethaovanhoa.vn
+Thị trường 365, thitruong365.com
+Thị trường Tài chính Tiền tệ, thitruongtaichinhtiente.vn
+Thời báo Tài chính Việt Nam, thoibaotaichinhvietnam.vn
+Thời Đại, thoidai.com.vn
+Thương gia Online, thuonggiaonline.vn
+Thương gia Thị trường, thuonggiathitruong.vn
+Thương hiệu Công luận, thuonghieucongluan.com.vn
+Thương hiệu Sản phẩm, thuonghieusanpham.vn
+Thương hiệu và Doanh nhân, thuonghieuvadoanhnhan.com
+Thương hiệu và Pháp luật, thuonghieuvaphapluat.vn
+Thương trường, thuongtruong.com.vn
+Tiền Phong, tienphong.vn
+Tiếp thị Đầu tư 24h, tiepthidautu24h.vn
+Tiếp thị và Gia đình, tiepthivagiadinh.vn
+Tiin, tiin.vn
+Tinh Tế, tinhte.vn
+Tin nhanh Chứng khoán, tinnhanhchungkhoan.vn
+Tin tức, tintuc.vn
+Tin tức Online, tintuconline.com.vn
+Tin tức Việt Nam, tintucvietnam.vn
+Tổ Quốc, toquoc.vn
+TTVN Tổ quốc, ttvn.toquoc.vn
+Tuổi Trẻ, tuoitre.vn
+Tuổi Trẻ News, tuoitrenews.vn
+Tuổi trẻ Thủ đô, tuoitrethudo.com.vn
+Tuyên giáo, tuyengiao.vn
+VCCI News, vccinews.com
+VCCI News, vccinews.vn
+VEF, vef.vn
+VEN Công thương, ven.congthuong.vn
+Việt Báo, vietbao.vn
+Vietdaily, vietdaily.vn
+Vietnambiz, vietnambiz.vn
+Vietnam Finance, vietnamfinance.vn
+Việt Nam Hội nhập, vietnamhoinhap.vn
+Vietnamnet, vietnamnet.vn
+Vietnamnet EN, vietnamnet.vn/en
+Vietnam News, vietnamnews.vn
+Vietnamplus, vietnamplus.vn
+Vietpress, vietpress.vn
+VietQ, vietq.vn
+Vietstock, vietstock.vn
+Viettimes, viettimes.vn
+Vinacorp, vinacorp.vn
+VIR, vir.com.vn
+VJST, vjst.vn
+VLR, vlr.vn
+VNBusiness, vnbusiness.vn
+VnEconomy, vneconomy.vn
+VnExpress, vnexpress.net
+VNFinance, vnfinance.vn
+VNMedia, vnmedia.vn
+VNReview, vnreview.vn
+VOH, voh.com.vn
+VOV, vov.vn
+VOV Giao thông, vovgiaothong.vn
+VTC News, vtcnews.vn
+VTV, vtv.vn
+Xã Luận News, xaluannews.com
+Yan, yan.vn
+Yeah1, yeah1.com
+Znews, znews.vn

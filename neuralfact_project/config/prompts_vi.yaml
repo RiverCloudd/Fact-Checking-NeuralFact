@@ -58,22 +58,6 @@ checkworthy_prompt: |
   Kết quả:
 
 
-
-qgen_prompt: |
-  Cho một mệnh đề, nhiệm vụ của bạn là tạo ra số lượng câu hỏi TỐI THIỂU cần thiết để tra cứu và xác minh tính chính xác của mệnh đề đó trên công cụ tìm kiếm.
-  Xuất ra định dạng JSON với một khóa duy nhất "Questions", giá trị là danh sách các câu hỏi.
-
-  Ví dụ:
-  Mệnh đề: Tuyến đường sắt đô thị Cát Linh - Hà Đông có chiều dài 13km và bao gồm 12 nhà ga.
-  Kết quả: {{"Questions": ["Chiều dài của tuyến đường sắt Cát Linh - Hà Đông là bao nhiêu?", "Tuyến đường sắt Cát Linh - Hà Đông có bao nhiêu nhà ga?"]}}
-
-  Mệnh đề: Giải chạy việt dã Thành phố Hồ Chí Minh (HCMC Marathon) năm 2026 sẽ được tổ chức vào ngày 22 tháng 3.
-  Kết quả: {{"Questions": ["HCMC Marathon 2026 được tổ chức vào ngày nào?", "Giải chạy marathon nào diễn ra ở TP.HCM vào ngày 22/3/2026?"]}}
-
-  Mệnh đề: {claim}
-  Kết quả:
-
-
 verify_prompt: |
   Nhiệm vụ của bạn là đóng vai trò một giám khảo khách quan, đánh giá độ chính xác của [Mệnh đề] CHỈ DỰA VÀO [Bằng chứng] được cung cấp.
   TUYỆT ĐỐI KHÔNG sử dụng kiến thức nền của bạn. Hãy coi [Bằng chứng] là sự thật tuyệt đối.

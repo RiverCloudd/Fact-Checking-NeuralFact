@@ -3,33 +3,76 @@ import requests
 import os
 from core.config import SERPER_API_KEY
 import csv
+import re
 
-# Load source domains and unreliable sources from media bias CSV at module level (once)
-_UNRELIABLE_DOMAINS = set()
+# Load source domains from media bias CSV at module level (once)
 _ALL_SOURCE_DOMAINS = set()
 _CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
 if os.path.exists(_CSV_PATH):
     with open(_CSV_PATH, "r", encoding="utf-8") as _f:
-        for _row in csv.DictReader(_f):
+        reader = csv.DictReader(_f)
+        for _row in reader:
             raw_url = _row.get("url", "").strip()
-            domain = urlparse(raw_url).netloc.lower().lstrip("www.")
+            if not raw_url:
+                continue
+            # Handle both formats: "https://example.com" and "example.com"
+            if raw_url.startswith("http"):
+                domain = urlparse(raw_url).netloc.lower()
+            else:
+                domain = raw_url.lower()
+            
+            # Normalize: remove www. prefix
+            if domain.startswith("www."):
+                domain = domain[4:]
+            
             if domain:
                 _ALL_SOURCE_DOMAINS.add(domain)
-                rating = _row.get("factual_reporting_rating", "").strip()
-                if rating in ("LOW", "VERY LOW"):
-                    _UNRELIABLE_DOMAINS.add(domain)
 
-print(f"Loaded {_CSV_PATH}: {_ALL_SOURCE_DOMAINS.__len__()} sources, {_UNRELIABLE_DOMAINS.__len__()} unreliable")
+print(f"✅ Loaded {_CSV_PATH}: {len(_ALL_SOURCE_DOMAINS)} verified sources")
 
 
 
 def _get_domain(link: str) -> str:
-    return urlparse(link).netloc.lower()
+    domain = urlparse(link).netloc.lower()
+    # Normalize: remove www. prefix if exists (to match CSV format)
+    if domain.startswith("www."):
+        domain = domain[4:]
+    return domain
 
-def _is_unreliable(link: str) -> bool:
-    domain = _get_domain(link)
-    # Trả về True nếu domain là baddomain.com hoặc abc.baddomain.com
-    return any(domain == bad or domain.endswith("." + bad) for bad in _UNRELIABLE_DOMAINS)
+def _fetch_longer_snippet(url: str, max_length: int = 400) -> str:
+    """Fetch page and extract longer snippet from first paragraph(s)
+    
+    Args:
+        url: Article URL
+        max_length: Max characters to return
+        
+    Returns:
+        Longer snippet or empty string if failed
+    """
+    try:
+        response = requests.get(url, timeout=2)
+        response.encoding = 'utf-8'
+        html = response.text
+        
+        # Extract paragraphs: <p>...</p> or <div class="content">...</div>
+        paragraphs = re.findall(r'<p[^>]*>([^<]+)</p>', html)
+        
+        if not paragraphs:
+            # Fallback: look for divs with content
+            paragraphs = re.findall(r'<div[^>]*class="[^"]*content[^"]*"[^>]*>([^<]+)</div>', html)
+        
+        if paragraphs:
+            # Join first 2-3 paragraphs
+            snippet = ' '.join(p.strip() for p in paragraphs[:3])
+            # Clean HTML entities
+            snippet = re.sub(r'&[a-z]+;', '', snippet)
+            # Remove extra spaces
+            snippet = re.sub(r'\s+', ' ', snippet).strip()
+            return snippet[:max_length]
+    except:
+        pass
+    
+    return ""
 
 def _is_known_source(link: str) -> bool:
     domain = _get_domain(link)
@@ -111,30 +154,27 @@ def search_google(query: str, top_k: int = 3) -> list:
         if "answerBox" in search_data:
             answer_box = search_data["answerBox"]
             answer_link = answer_box.get("link", "")
+            answer_snippet = answer_box.get("answer") or answer_box.get("snippet", "")
             
-            # Determine trust tier
+            # Determine verification tier
             if answer_link:
-                if _is_unreliable(answer_link):
-                    trust_tier = "unreliable"
-                elif _is_known_source(answer_link):
-                    trust_tier = "high_trust"
+                if _is_known_source(answer_link):
+                    trust_tier = "verified"
                 else:
-                    trust_tier = "unrated"
+                    trust_tier = "unverified"
             else:
-                trust_tier = "unrated"
+                trust_tier = "unverified"
             
-            if "answer" in answer_box:
+            if answer_snippet:
+                # Try to fetch longer snippet if too short
+                if len(answer_snippet) < 150 and answer_link:
+                    longer = _fetch_longer_snippet(answer_link)
+                    if longer:
+                        answer_snippet = longer
+                
                 evidences.append(_make_evidence_item(
                     title="Google Answer",
-                    snippet=answer_box["answer"],
-                    url=answer_link,
-                    source_type="answer_box",
-                    tier=trust_tier,
-                ))
-            elif "snippet" in answer_box:
-                evidences.append(_make_evidence_item(
-                    title="Google Snippet",
-                    snippet=answer_box["snippet"],
+                    snippet=answer_snippet,
                     url=answer_link,
                     source_type="answer_box",
                     tier=trust_tier,
@@ -146,16 +186,14 @@ def search_google(query: str, top_k: int = 3) -> list:
             description = kg.get("description", "")
             kg_url = kg.get("website", "") or kg.get("descriptionLink", "")
             
-            # Determine trust tier
+            # Determine verification tier
             if kg_url:
-                if _is_unreliable(kg_url):
-                    trust_tier = "unreliable"
-                elif _is_known_source(kg_url):
-                    trust_tier = "high_trust"
+                if _is_known_source(kg_url):
+                    trust_tier = "verified"
                 else:
-                    trust_tier = "unrated"
+                    trust_tier = "unverified"
             else:
-                trust_tier = "unrated"
+                trust_tier = "unverified"
             
             if description:
                 evidences.append(_make_evidence_item(
@@ -172,31 +210,39 @@ def search_google(query: str, top_k: int = 3) -> list:
             
             # Lần 1: Cố gắng lấy các nguồn uy tín (có trong CSV)
             for result in raw_organics:
-                snippet = result.get("snippet", "")
+                snippet = result.get("snippet", "").strip()
                 link = result.get("link", "")
                 
-                if snippet and link and not _is_unreliable(link) and _is_known_source(link):
+                if snippet and link and _is_known_source(link):
+                    # If snippet too short, try to fetch longer one
+                    if len(snippet) < 150:
+                        longer = _fetch_longer_snippet(link)
+                        if longer:
+                            snippet = longer
+                    
                     evidences.append(_make_evidence_item(
                         title=result.get("title", ""),
                         snippet=snippet,
                         url=link,
                         source_type="organic",
-                        tier="high_trust" # ✅ Uy tín cao
+                        tier="verified"
                     ))
                     
             # Lần 2 (FALLBACK): Nếu bộ lọc whitelist ở trên chém sạch kết quả (evidences rỗng)
-            # Ta sẽ vơ vét các nguồn bình thường, miễn là nó KHÔNG nằm trong danh sách đen Unreliable
+            # Ta sẽ vơ vét các nguồn bình thường
             if not evidences:
                 for result in raw_organics[:top_k]:
-                    snippet = result.get("snippet", "")
+                    snippet = result.get("snippet", "").strip()
                     link = result.get("link", "")
                     
                     if snippet and link:
-                        if _is_unreliable(link):
-                            tier = "unreliable"  # ❌ Không uy tín
-                        else:
-                            tier = "unrated"  # ⚠️ Chưa rõ uy tín
+                        # If snippet too short, try to fetch longer one
+                        if len(snippet) < 150:
+                            longer = _fetch_longer_snippet(link)
+                            if longer:
+                                snippet = longer
                         
+                        tier = "unverified"
                         evidences.append(_make_evidence_item(
                             title=result.get("title", ""),
                             snippet=snippet,

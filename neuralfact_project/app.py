@@ -15,14 +15,13 @@ def _display_evidence_text(ev) -> str:
     return str(ev or "").strip()
 
 
-def _get_trust_badge(tier: str = "unrated") -> tuple[str, str]:
-    """Return (html_badge, emoji) based on trust tier"""
+def _get_trust_badge(tier: str = "unverified") -> tuple[str, str]:
+    """Return (html_badge, emoji) based on verification tier"""
     TRUST_CONFIG = {
-        "high_trust": ("✅ Uy tín cao", "high-trust-badge"),
-        "unrated": ("⚠️ Chưa xác nhận", "unrated-badge"),
-        "unreliable": ("❌ Không uy tín", "unreliable-badge"),
+        "verified": ("✅ Verified", "verified-badge"),
+        "unverified": ("⚠️ Unverified", "unverified-badge"),
     }
-    badge_text, badge_class = TRUST_CONFIG.get(tier, TRUST_CONFIG["unrated"])
+    badge_text, badge_class = TRUST_CONFIG.get(tier, TRUST_CONFIG["unverified"])
     return f'<span class="trust-badge {badge_class}">{badge_text}</span>', badge_text
 
 
@@ -955,25 +954,18 @@ def _inject_modern_styles() -> None:
                 white-space: nowrap;
             }
 
-            .trust-badge.high-trust-badge {
+            .trust-badge.verified-badge {
                 background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.14));
                 color: #6ee7b7;
                 border: 1px solid rgba(16, 185, 129, 0.35);
                 box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
             }
 
-            .trust-badge.unrated-badge {
+            .trust-badge.unverified-badge {
                 background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(217, 119, 6, 0.12));
                 color: #fcd34d;
                 border: 1px solid rgba(251, 191, 36, 0.36);
                 box-shadow: 0 0 8px rgba(251, 191, 36, 0.22);
-            }
-
-            .trust-badge.unreliable-badge {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.16), rgba(220, 38, 38, 0.12));
-                color: #fca5a5;
-                border: 1px solid rgba(239, 68, 68, 0.36);
-                box-shadow: 0 0 8px rgba(239, 68, 68, 0.22);
             }
         </style>
         """,

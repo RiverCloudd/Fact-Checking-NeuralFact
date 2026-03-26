@@ -450,6 +450,17 @@ def verify_node(state: FactCheckState):
             }
             continue
 
+        # Check if all evidence sources are unverified
+        all_unverified = all(ev.get("tier") == "unverified" for ev in evidences if isinstance(ev, dict))
+        if all_unverified:
+            verdicts[claim] = {
+                "factuality": False,
+                "reasoning": "Tất cả nguồn bằng chứng chưa được xác thực. Không thể đưa ra kết luận.",
+                "error": "Unverified sources only",
+                "correction": "Cần bằng chứng từ các nguồn đã xác thực."
+            }
+            continue
+
         first_pass = evidences[:verify_evidences_per_claim]
         verification_result = _run_verify_once(claim, first_pass)
 
@@ -458,22 +469,31 @@ def verify_node(state: FactCheckState):
     # Deterministic fallback counts to keep article conclusion stable.
     true_count = 0
     false_count = 0
+    nei_count = 0
     for item in verdicts.values():
-        factuality = _normalize_factuality(item.get("factuality", "NEI"))
-        if factuality is True:
-            true_count += 1
+        error = item.get("error", "").lower()
+        # If error is "unverified sources only", classify as NEI
+        if error == "unverified sources only":
+            nei_count += 1
         else:
-            false_count += 1
+            factuality = _normalize_factuality(item.get("factuality", "NEI"))
+            if factuality is True:
+                true_count += 1
+            else:
+                false_count += 1
 
     if false_count > 0:
         deterministic_article = False
-        deterministic_summary = "Bản tin có ít nhất một mệnh đề sai hoặc không đủ căn cứ để xác nhận."
+        deterministic_summary = "Bản tin có ít nhất một mệnh đề sai hoặc không đủ căn cứ xác thực."
     elif true_count > 0:
         deterministic_article = True
-        deterministic_summary = "Các mệnh đề kiểm chứng đều đúng theo bằng chứng hiện có."
+        deterministic_summary = "Các mệnh đề kiểm chứng đều đúng theo bằng chứng xác thực."
     else:
         deterministic_article = False
-        deterministic_summary = "Không đủ căn cứ để xác nhận bản tin là đúng."
+        if nei_count > 0:
+            deterministic_summary = "Không đủ nguồn bằng chứng xác thực để kết luận."
+        else:
+            deterministic_summary = "Không đủ căn cứ để xác nhận bản tin là đúng."
 
     # Prefer deterministic article verdict for consistency.
     overall_verdict["factuality"] = deterministic_article
@@ -481,7 +501,7 @@ def verify_node(state: FactCheckState):
     overall_verdict["counts"] = {
         "true": true_count,
         "false": false_count,
-        "nei": 0
+        "nei": nei_count
     }
     
     return {
