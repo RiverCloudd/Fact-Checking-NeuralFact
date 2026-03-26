@@ -19,21 +19,21 @@ if os.path.exists(_CSV_PATH):
                 if rating in ("LOW", "VERY LOW"):
                     _UNRELIABLE_DOMAINS.add(domain)
 
+print(f"Loaded {_CSV_PATH}: {_ALL_SOURCE_DOMAINS.__len__()} sources, {_UNRELIABLE_DOMAINS.__len__()} unreliable")
+
 
 
 def _get_domain(link: str) -> str:
-    """Extract domain from a URL, normalized."""
-    return urlparse(link).netloc.lower().lstrip("www.")
+    return urlparse(link).netloc.lower()
 
 def _is_unreliable(link: str) -> bool:
-    """Check if a URL's domain is in the unreliable sources list."""
     domain = _get_domain(link)
-    return domain in _UNRELIABLE_DOMAINS
+    # Trả về True nếu domain là baddomain.com hoặc abc.baddomain.com
+    return any(domain == bad or domain.endswith("." + bad) for bad in _UNRELIABLE_DOMAINS)
 
 def _is_known_source(link: str) -> bool:
-    """Check if a URL's domain is in the known sources list."""
     domain = _get_domain(link)
-    return domain in _ALL_SOURCE_DOMAINS
+    return any(domain == known or domain.endswith("." + known) for known in _ALL_SOURCE_DOMAINS)
 
 def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") -> str:
     parts = []
@@ -86,7 +86,7 @@ def search_google(query: str, top_k: int = 3) -> list:
     
     payload = {
         "q": query, 
-        "num": top_k,
+        "num": top_k * 3,  # Lấy nhiều hơn top_k để có thể lọc sau
         "gl": "vn",
         "hl": "vi",
         "autocorrect": True # Tự động sửa lỗi chính tả trong query
@@ -111,15 +111,25 @@ def search_google(query: str, top_k: int = 3) -> list:
         if "answerBox" in search_data:
             answer_box = search_data["answerBox"]
             answer_link = answer_box.get("link", "")
-            # Only add if not unreliable and is a known source
-            if answer_link and (_is_unreliable(answer_link) or not _is_known_source(answer_link)):
-                pass
-            elif "answer" in answer_box:
+            
+            # Determine trust tier
+            if answer_link:
+                if _is_unreliable(answer_link):
+                    trust_tier = "unreliable"
+                elif _is_known_source(answer_link):
+                    trust_tier = "high_trust"
+                else:
+                    trust_tier = "unrated"
+            else:
+                trust_tier = "unrated"
+            
+            if "answer" in answer_box:
                 evidences.append(_make_evidence_item(
                     title="Google Answer",
                     snippet=answer_box["answer"],
                     url=answer_link,
                     source_type="answer_box",
+                    tier=trust_tier,
                 ))
             elif "snippet" in answer_box:
                 evidences.append(_make_evidence_item(
@@ -127,6 +137,7 @@ def search_google(query: str, top_k: int = 3) -> list:
                     snippet=answer_box["snippet"],
                     url=answer_link,
                     source_type="answer_box",
+                    tier=trust_tier,
                 ))
         
         # 2. Get knowledge graph if available
@@ -134,30 +145,65 @@ def search_google(query: str, top_k: int = 3) -> list:
             kg = search_data["knowledgeGraph"]
             description = kg.get("description", "")
             kg_url = kg.get("website", "") or kg.get("descriptionLink", "")
-            # Only add if not unreliable and is a known source
-            if kg_url and (_is_unreliable(kg_url) or not _is_known_source(kg_url)):
-                pass
-            elif description:
+            
+            # Determine trust tier
+            if kg_url:
+                if _is_unreliable(kg_url):
+                    trust_tier = "unreliable"
+                elif _is_known_source(kg_url):
+                    trust_tier = "high_trust"
+                else:
+                    trust_tier = "unrated"
+            else:
+                trust_tier = "unrated"
+            
+            if description:
                 evidences.append(_make_evidence_item(
                     title=kg.get("title", "Knowledge Graph"),
                     snippet=description,
                     url=kg_url,
                     source_type="knowledge_graph",
-                ))
+                    tier=trust_tier,
+                ))  
         
         # 3. Get organic results
         if "organic" in search_data:
-            for result in search_data["organic"][:top_k]:
+            raw_organics = search_data["organic"]
+            
+            # Lần 1: Cố gắng lấy các nguồn uy tín (có trong CSV)
+            for result in raw_organics:
                 snippet = result.get("snippet", "")
-                title = result.get("title", "")
                 link = result.get("link", "")
+                
                 if snippet and link and not _is_unreliable(link) and _is_known_source(link):
                     evidences.append(_make_evidence_item(
-                        title=title,
+                        title=result.get("title", ""),
                         snippet=snippet,
                         url=link,
                         source_type="organic",
+                        tier="high_trust" # ✅ Uy tín cao
                     ))
+                    
+            # Lần 2 (FALLBACK): Nếu bộ lọc whitelist ở trên chém sạch kết quả (evidences rỗng)
+            # Ta sẽ vơ vét các nguồn bình thường, miễn là nó KHÔNG nằm trong danh sách đen Unreliable
+            if not evidences:
+                for result in raw_organics[:top_k]:
+                    snippet = result.get("snippet", "")
+                    link = result.get("link", "")
+                    
+                    if snippet and link:
+                        if _is_unreliable(link):
+                            tier = "unreliable"  # ❌ Không uy tín
+                        else:
+                            tier = "unrated"  # ⚠️ Chưa rõ uy tín
+                        
+                        evidences.append(_make_evidence_item(
+                            title=result.get("title", ""),
+                            snippet=snippet,
+                            url=link,
+                            source_type="organic",
+                            tier=tier
+                        ))
                     
     except requests.exceptions.Timeout:
         print(f"Serper API timeout khi tìm kiếm: '{query}'")

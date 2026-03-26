@@ -1,13 +1,29 @@
 import streamlit as st
 import time
+from datetime import datetime
 from pipeline.nodes import decompose_node, checkworthy_node, retrieve_node, verify_node
-from core.config import PRICE_1M_INPUT_TOKENS, PRICE_1M_OUTPUT_TOKENS
+from core.config import (
+    PRICE_1M_INPUT_TOKENS, PRICE_1M_OUTPUT_TOKENS,
+    DEEPSEEK_PRICE_1M_INPUT_TOKENS, DEEPSEEK_PRICE_1M_OUTPUT_TOKENS,
+    GEMINI_PRICE_1M_INPUT_TOKENS, GEMINI_PRICE_1M_OUTPUT_TOKENS
+)
 
 
 def _display_evidence_text(ev) -> str:
     if isinstance(ev, dict):
         return str(ev.get("text", "")).strip()
     return str(ev or "").strip()
+
+
+def _get_trust_badge(tier: str = "unrated") -> tuple[str, str]:
+    """Return (html_badge, emoji) based on trust tier"""
+    TRUST_CONFIG = {
+        "high_trust": ("✅ Uy tín cao", "high-trust-badge"),
+        "unrated": ("⚠️ Chưa xác nhận", "unrated-badge"),
+        "unreliable": ("❌ Không uy tín", "unreliable-badge"),
+    }
+    badge_text, badge_class = TRUST_CONFIG.get(tier, TRUST_CONFIG["unrated"])
+    return f'<span class="trust-badge {badge_class}">{badge_text}</span>', badge_text
 
 
 ICON_CHECK = '<span class="nf-icon">&#xf00c;</span>'
@@ -926,6 +942,39 @@ def _inject_modern_styles() -> None:
                     filter: drop-shadow(0 0 6px rgba(125, 241, 255, 0.2));
                 }
             }
+
+            /* Trust Badge Styles */
+            .trust-badge {
+                display: inline-block;
+                padding: 0.3rem 0.7rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                margin-left: 0.4rem;
+                vertical-align: baseline;
+                white-space: nowrap;
+            }
+
+            .trust-badge.high-trust-badge {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.14));
+                color: #6ee7b7;
+                border: 1px solid rgba(16, 185, 129, 0.35);
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+            }
+
+            .trust-badge.unrated-badge {
+                background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(217, 119, 6, 0.12));
+                color: #fcd34d;
+                border: 1px solid rgba(251, 191, 36, 0.36);
+                box-shadow: 0 0 8px rgba(251, 191, 36, 0.22);
+            }
+
+            .trust-badge.unreliable-badge {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.16), rgba(220, 38, 38, 0.12));
+                color: #fca5a5;
+                border: 1px solid rgba(239, 68, 68, 0.36);
+                box-shadow: 0 0 8px rgba(239, 68, 68, 0.22);
+            }
         </style>
         """,
         unsafe_allow_html=True,
@@ -1041,7 +1090,10 @@ if run_check:
         initial_state = {
             "input_text": user_input, "claims": [], "checkworthy_claims": [],
             "queries": {}, "evidence": {}, "verdicts": {}, "overall_verdict": {}, "retry_count": 0,
-            "prompt_tokens": 0, "completion_tokens": 0
+            "prompt_tokens": 0, "completion_tokens": 0,
+            "deepseek_prompt_tokens": 0, "deepseek_completion_tokens": 0,
+            "gemini_prompt_tokens": 0, "gemini_completion_tokens": 0,
+            "current_datetime": datetime.now().isoformat(),
         }
 
         try:
@@ -1051,11 +1103,23 @@ if run_check:
             prompt_tokens = final_state.get("prompt_tokens", 0)
             completion_tokens = final_state.get("completion_tokens", 0)
             total_tokens = prompt_tokens + completion_tokens
-                
-            # Calculate cost based on input and output token prices
-            input_cost = (prompt_tokens / 1_000_000) * PRICE_1M_INPUT_TOKENS
-            output_cost = (completion_tokens / 1_000_000) * PRICE_1M_OUTPUT_TOKENS
-            total_cost = round(input_cost + output_cost, 6)
+            
+            # Get per-model tokens
+            deepseek_prompt_tokens = final_state.get("deepseek_prompt_tokens", 0)
+            deepseek_completion_tokens = final_state.get("deepseek_completion_tokens", 0)
+            gemini_prompt_tokens = final_state.get("gemini_prompt_tokens", 0)
+            gemini_completion_tokens = final_state.get("gemini_completion_tokens", 0)
+            
+            # Calculate cost per model
+            deepseek_input_cost = (deepseek_prompt_tokens / 1_000_000) * DEEPSEEK_PRICE_1M_INPUT_TOKENS
+            deepseek_output_cost = (deepseek_completion_tokens / 1_000_000) * DEEPSEEK_PRICE_1M_OUTPUT_TOKENS
+            deepseek_total_cost = round(deepseek_input_cost + deepseek_output_cost, 6)
+            
+            gemini_input_cost = (gemini_prompt_tokens / 1_000_000) * GEMINI_PRICE_1M_INPUT_TOKENS
+            gemini_output_cost = (gemini_completion_tokens / 1_000_000) * GEMINI_PRICE_1M_OUTPUT_TOKENS
+            gemini_total_cost = round(gemini_input_cost + gemini_output_cost, 6)
+            
+            total_cost = round(deepseek_total_cost + gemini_total_cost, 6)
                 
             st.markdown(f'<div class="success-banner">{ICON_CHECK} <strong>Hoàn tất kiểm chứng</strong> - kết quả đã sẵn sàng để bạn phân tích.</div>', unsafe_allow_html=True)
                 
@@ -1064,6 +1128,22 @@ if run_check:
             col2.metric("Input Tokens", f"{prompt_tokens}")
             col3.metric("Output Tokens", f"{completion_tokens}")
             col4.metric("Chi phí ước tính", f"${total_cost}")
+            
+            # Cost breakdown per model
+            with st.expander("💰 Chi tiết chi phí theo mô hình", expanded=False):
+                cost_col1, cost_col2 = st.columns(2)
+                
+                with cost_col1:
+                    st.markdown("**DeepSeek** (Phân tách, Kiểm tra, Tìm kiếm)")
+                    st.metric("Input Tokens", f"{deepseek_prompt_tokens}")
+                    st.metric("Output Tokens", f"{deepseek_completion_tokens}")
+                    st.metric("Chi phí", f"${deepseek_total_cost}")
+                
+                with cost_col2:
+                    st.markdown("**Gemini** (Xác minh)")
+                    st.metric("Input Tokens", f"{gemini_prompt_tokens}")
+                    st.metric("Output Tokens", f"{gemini_completion_tokens}")
+                    st.metric("Chi phí", f"${gemini_total_cost}")
                 
             _animated_divider()
             st.markdown(f"### {ICON_DETAIL} Kết quả chi tiết", unsafe_allow_html=True)
@@ -1131,7 +1211,9 @@ if run_check:
                         )
                         for i, ev in enumerate(evidences[:3], 1):  # Show top 3
                             with st.container():
-                                st.caption(f"Nguồn {i}:")
+                                tier = ev.get("tier", "unrated") if isinstance(ev, dict) else "unrated"
+                                badge_html, badge_text = _get_trust_badge(tier)
+                                st.markdown(f"**Nguồn {i}:** {badge_html}", unsafe_allow_html=True)
                                 st.text(_display_evidence_text(ev))
                     else:
                         st.markdown(

@@ -3,46 +3,48 @@ decompose_prompt: |
   Trả JSON duy nhất: {{"claims": ["..."]}}.
 
   Quy tắc:
-  1. Mỗi claim phải tự chứa đầy đủ thông tin, không phụ thuộc vào câu trước hoặc sau, không dùng đại từ/vị từ mơ hồ như "đây", "đó", "này", "vậy", v.v.
+  1. Mỗi claim phải tự chứa đầy đủ thông tin, không phụ thuộc vào câu trước hoặc sau, không dùng đại từ mơ hồ.
   2. Giữ nguyên nội dung gốc, không sửa sai, không thêm kiến thức ngoài văn bản.
-  3. Không suy diễn. Chỉ viết lại các ý xuất hiện rõ ràng trong văn bản.
-  4. Không dùng đại từ mơ hồ; thay bằng chủ thể đầy đủ nếu có trong câu gốc.
+  3. Không suy diễn. Chỉ viết lại các ý xuất hiện rõ ràng.
+  4. Thay đại từ mơ hồ bằng chủ thể đầy đủ nếu có trong câu gốc.
   5. Mỗi claim ngắn gọn, độc lập, có thể kiểm chứng.
-  6. Nếu một câu là một phát biểu thống nhất gồm kết quả + thời gian + quan hệ giữa các bên, phải giữ nguyên thành một claim; không tách nếu việc tách có thể làm từng phần đúng riêng lẻ nhưng câu gốc sai.
-  7. Chỉ tách khi các vế là các sự thật độc lập.
-  8. Tối đa {max_claims} claim.
+  6. **Normalize temporal references**: Nếu claim chứa từ tương đối về thời gian (hôm nay, hôm qua, tuần này, tháng trước, năm ngoái, v.v.), hãy thay bằng ngày/tháng cụ thể dựa trên hôm nay là {current_date}. Model tự suy ra động:
+     - Ví dụ: "Tổng thống hiện nay của Việt Nam là Tô Lâm" → "Tổng thống ngày 26/3/2026 của Việt Nam là Tô Lâm"
+     - Ví dụ: "giá xăng hôm qua cao" → "giá xăng ngày 25/3/2026 cao"
+     - Ví dụ: "tuần này UBND họp" → "từ 23/3 đến 29/3/2026 UBND họp"
+  7. Tối đa {max_claims} claim.
 
-  Ví dụ đúng:
-  Văn bản: "Obama là tổng thống thứ 44 của Anh. Ông sinh năm 1961 tại Hawaii."
-  Kết quả: {{"claims": ["Obama là tổng thống thứ 44 của Anh.", "Obama sinh năm 1961 tại Hawaii."]}}
+  Ví dụ decompose:
+  - Văn bản: "Obama là tổng thống thứ 44 của Anh. Ông sinh năm 1961 tại Hawaii."
+    → {{"claims": ["Obama là tổng thống thứ 44 của Anh.", "Obama sinh năm 1961 tại Hawaii."]}}
 
-  Văn bản: "Iran thắng Mỹ vào năm 2026."
-  Kết quả: {{"claims": ["Iran thắng Mỹ vào năm 2026."]}}
-
-  Văn bản: "Iran tuyên bố chiến thắng Mỹ. Cuộc chiến diễn ra vào năm 2026."
-  Kết quả: {{"claims": ["Iran tuyên bố chiến thắng Mỹ.", "Cuộc chiến giữa Iran và Mỹ diễn ra vào năm 2026."]}}
+  - Văn bản: "Hôm nay trời mưa. Tôi hôm nay không đi làm."
+    → {{"claims": ["Ngày 26/3/2026 trời mưa.", "Ngày 26/3/2026 tôi không đi làm."]}}
 
   Văn bản: {doc}
   Kết quả:
 
 
 checkworthy_prompt: |
-  Nhiệm vụ: Đánh giá từng mệnh đề xem có phải là thông tin thực tế, có thể kiểm chứng khách quan bằng bằng chứng hay không. Một mệnh đề "đáng kiểm chứng" nếu là khẳng định về sự thật, có thể kiểm tra qua nguồn đáng tin cậy.
+  Nhiệm vụ của bạn là đánh giá từng mệnh đề được cung cấp để xác định xem nó có chứa thông tin thực tế có thể được xác minh khách quan bằng bằng chứng hay không. Một mệnh đề được coi là "đáng kiểm chứng" (check-worthy) nếu nó là một khẳng định về sự thật có thể kiểm tra được qua các nguồn đáng tin cậy.
 
-  Tiêu chí:
-  - Là phát biểu về sự kiện, dữ liệu, thông tin đúng/sai (không phải ý kiến, cảm xúc, đánh giá chủ quan).
-  - Đề cập đối tượng, sự kiện, con số cụ thể, xác định rõ ràng (không dùng đại từ mơ hồ như "anh ấy", "nó" nếu không rõ ngữ cảnh).
-  - Có thể tra cứu, đối chiếu với nguồn độc lập (bách khoa, báo cáo, thống kê...).
-  - Là câu khẳng định hoặc phủ định (không phải câu hỏi, mệnh lệnh, điều kiện).
+  Hãy xem xét các tiêu chí sau:
+  1. **Tính thực tế**: Mệnh đề phải là một phát biểu về sự việc, sự kiện, dữ liệu, hoặc thông tin có thể đúng hoặc sai. Nó không phải là ý kiến chủ quan, cảm xúc, đánh giá giá trị (ví dụ: "tốt nhất", "đẹp", "nên").
+  2. **Tính cụ thể**: Mệnh đề phải đề cập đến các đối tượng, sự kiện, con số cụ thể, có thể xác định rõ ràng. Tránh các đại từ không rõ ràng như "anh ấy", "cô ấy", "nó", trừ khi ngữ cảnh đã xác định (nhưng ở đây chúng ta xét từng mệnh đề độc lập). Các tên riêng (người, địa danh, tổ chức) là đủ cụ thể.
+  3. **Tính khả kiểm**: Thông tin trong mệnh đề có thể được tra cứu, đối chiếu với các nguồn độc lập như bách khoa toàn thư, cơ sở dữ liệu, báo cáo khoa học, thống kê chính thức, v.v.
+  4. **Tính khẳng định**: Mệnh đề ở dạng khẳng định (không phải câu hỏi, mệnh lệnh, hay giả định). Ví dụ: "Nếu A thì B" là một điều kiện, không phải khẳng định trực tiếp.
 
-  Ví dụ:
+  Dưới đây là một số ví dụ minh họa:
 
   - "Barack Obama là tổng thống Hoa Kỳ." → **Có** (Đây là một sự thật lịch sử có thể kiểm chứng, với chủ thể rõ ràng.)
-  - "Thuốc XYZ không chữa khỏi bệnh ung thư." → **Có** (Một tuyên bố y học có thể kiểm tra bằng nghiên cứu.)
+  - "Thuốc XYZ chữa khỏi bệnh ung thư." → **Có** (Một tuyên bố y học có thể kiểm tra bằng nghiên cứu.)
   - "Dân số Việt Nam năm 2023 là 100 triệu người." → **Có** (Số liệu thống kê có thể kiểm tra.)
-  - "Anh ấy là kỹ sư." → **Không** (Thiếu thông tin về "anh ấy", không thể xác minh.)
-  - "Giải chạy marathon là môn thể thao tuyệt vời nhất." → **Không** (Ý kiến chủ quan.)
+  - "Trái đất quay quanh Mặt trời." → **Có** (Sự thật khoa học.)
+  - "Anh ấy là kỹ sư." → **Không** (Thiếu thông tin về "anh ấy" là ai, không thể xác minh.)
+  - "Giải chạy marathon là môn thể thao tuyệt vời nhất." → **Không** (Ý kiến chủ quan, không thể kiểm chứng.)
   - "Nên ăn nhiều rau xanh để tốt cho sức khỏe." → **Không** (Lời khuyên, không phải khẳng định thực tế.)
+  - "Có thể trời sẽ mưa vào ngày mai." → **Không** (Dự báo, không phải sự thật hiện tại có thể kiểm tra.)
+  - "Thuật toán SVM luôn cho kết quả tốt hơn Decision Tree." → **Không** (Nhận định phụ thuộc vào ngữ cảnh, không phải sự thật tuyệt đối.)
 
   Phản hồi phải ở định dạng JSON. Mỗi mệnh đề là một khóa, giá trị là "Có" hoặc "Không" kèm theo lý do ngắn gọn trong ngoặc đơn. Ví dụ:
   {{
@@ -54,6 +56,7 @@ checkworthy_prompt: |
   {texts}
 
   Kết quả:
+
 
 
 qgen_prompt: |

@@ -1,13 +1,15 @@
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from core.config import get_llm
+from core.config import get_deepseek_llm, get_gemini_llm
 from config.prompts_config import prompt_config
 from tools.serper_api import search_google
 from pipeline.state import FactCheckState
 import json
 import re
+from datetime import datetime, timedelta
 
-llm = get_llm()
+deepseek_llm = get_deepseek_llm()
+gemini_llm = get_gemini_llm()
 
 
 def _extract_token_usage(response) -> tuple[int, int]:
@@ -161,10 +163,18 @@ def _split_sentences_vi(text: str) -> list[str]:
 
 def decompose_node(state: FactCheckState):
     """Phase 1: Decompose - Phân tách văn bản thành các mệnh đề nguyên tử"""
+    # Get current datetime for temporal context
+    current_datetime = datetime.fromisoformat(state.get("current_datetime", datetime.now().isoformat()))
+    current_date = current_datetime.date()
+    
     user_input = prompt_config.decompose_prompt.format(
         doc=state["input_text"],
         max_claims=max(1, int(os.getenv("MAX_CLAIMS", "3"))),
+        current_date=current_date.strftime('%d/%m/%Y'),
     ).strip()
+    
+    deepseek_prompt_tokens = state.get("deepseek_prompt_tokens", 0)
+    deepseek_completion_tokens = state.get("deepseek_completion_tokens", 0)
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
 
@@ -176,7 +186,7 @@ def decompose_node(state: FactCheckState):
     claims = []
     for i in range(decompose_max_retries):
         try:
-            response = llm.invoke(user_input)
+            response = deepseek_llm.invoke(user_input)
             cleaned_content = clean_json_response(response.content)
             result = json.loads(cleaned_content)
             claims = result.get("claims", [])
@@ -185,6 +195,8 @@ def decompose_node(state: FactCheckState):
             used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
             prompt_tokens += used_prompt_tokens
             completion_tokens += used_completion_tokens
+            deepseek_prompt_tokens += used_prompt_tokens
+            deepseek_completion_tokens += used_completion_tokens
             
             if isinstance(claims, list) and len(claims) > 0:
                 break
@@ -199,21 +211,33 @@ def decompose_node(state: FactCheckState):
         claims = [s.strip() for s in sentences if len(s.strip()) >= 3]
     
     claims = claims[:max_claims]
+    
+    print(f"\n📄 DECOMPOSE NODE")
+    print(f"  Extracted {len(claims)} claims")
+    for i, claim in enumerate(claims, 1):
+        print(f"  [{i}] {claim[:60]}...")
 
     return {
         "claims": claims, 
         "retry_count": 0,
         "prompt_tokens": prompt_tokens,
-        "completion_tokens": completion_tokens
+        "completion_tokens": completion_tokens,
+        "deepseek_prompt_tokens": deepseek_prompt_tokens,
+        "deepseek_completion_tokens": deepseek_completion_tokens,
+        "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
 
 def checkworthy_node(state: FactCheckState):
     """Phase 2: Checkworthy - Lọc các mệnh đề đáng kiểm chứng"""
     claims = state["claims"]
-    print(f"Checkworthy node: {len(claims)} claims to evaluate")
-    print(f"Claims preview: {claims[:3]}...")
+    print(f"\n📋 CHECKWORTHY NODE")
+    print(f"  Input claims count: {len(claims)}")
+    for i, claim in enumerate(claims, 1):
+        print(f"  [{i}] {claim[:60]}...")
 
     max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
+    deepseek_prompt_tokens = state.get("deepseek_prompt_tokens", 0)
+    deepseek_completion_tokens = state.get("deepseek_completion_tokens", 0)
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
     checkworthy_max_retries = max(1, int(os.getenv("CHECKWORTHY_MAX_RETRIES", "1")))
@@ -226,7 +250,10 @@ def checkworthy_node(state: FactCheckState):
         return {
             "checkworthy_claims": [],
             "prompt_tokens": prompt_tokens,
-            "completion_tokens": completion_tokens
+            "completion_tokens": completion_tokens,
+            "deepseek_prompt_tokens": deepseek_prompt_tokens,
+            "deepseek_completion_tokens": deepseek_completion_tokens,
+            "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
         }
 
     user_input = prompt_config.checkworthy_prompt.format(texts="\n".join(candidate_claims)).strip()
@@ -234,7 +261,7 @@ def checkworthy_node(state: FactCheckState):
 
     for i in range(checkworthy_max_retries):
         try:
-            response = llm.invoke(user_input)
+            response = deepseek_llm.invoke(user_input)
             cleaned_content = clean_json_response(response.content)
             parsed = json.loads(cleaned_content)
             if isinstance(parsed, dict):
@@ -243,6 +270,8 @@ def checkworthy_node(state: FactCheckState):
             used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
             prompt_tokens += used_prompt_tokens
             completion_tokens += used_completion_tokens
+            deepseek_prompt_tokens += used_prompt_tokens
+            deepseek_completion_tokens += used_completion_tokens
 
             if llm_result is not None:
                 break
@@ -254,17 +283,29 @@ def checkworthy_node(state: FactCheckState):
     if isinstance(llm_result, dict):
         for claim in candidate_claims:
             verdict = str(llm_result.get(claim, "")).strip().lower()
+            print(f"  Verdict for '{claim[:50]}...': '{verdict}'")
             if verdict.startswith("có"):
                 checkworthy_claims.append(claim)
+                print(f"    ✅ INCLUDED")
+            else:
+                print(f"    ❌ EXCLUDED")
 
     # Safe fallback if LLM output is empty/unparseable.
     if not checkworthy_claims:
+        print(f"  ⚠️ No checkworthy claims found. Using fallback: all {len(candidate_claims)} claims")
         checkworthy_claims = candidate_claims
+    
+    print(f"  Output checkworthy claims count: {len(checkworthy_claims)}")
+    for i, claim in enumerate(checkworthy_claims, 1):
+        print(f"  [{i}] {claim[:60]}...")
 
     return {
         "checkworthy_claims": checkworthy_claims,
         "prompt_tokens": prompt_tokens,
-        "completion_tokens": completion_tokens
+        "completion_tokens": completion_tokens,
+        "deepseek_prompt_tokens": deepseek_prompt_tokens,
+        "deepseek_completion_tokens": deepseek_completion_tokens,
+        "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
 
 def retrieve_node(state: FactCheckState):
@@ -273,6 +314,11 @@ def retrieve_node(state: FactCheckState):
     if not claim_queries:
         base_claims = state.get("checkworthy_claims") or state.get("claims", [])
         claim_queries = {claim: [claim] for claim in base_claims}
+    
+    print(f"\n🔎 RETRIEVE NODE")
+    print(f"  Received {len(claim_queries)} claims to search")
+    for i, claim in enumerate(claim_queries.keys(), 1):
+        print(f"  [{i}] {claim[:60]}...")
 
     evidence_dict = {}
     retry_count = state.get("retry_count", 0)
@@ -305,12 +351,23 @@ def retrieve_node(state: FactCheckState):
             claim, evidences = future.result()
             evidence_dict[claim] = evidences
     
+    print(f"\n  Completed searches for: {len(evidence_dict)} claims")
+    for claim, evidences in evidence_dict.items():
+        print(f"  - '{claim[:50]}...': {len(evidences)} evidence items")
+    
     if evidence_dict and all(not ev for ev in evidence_dict.values()):
         retry_count += 1
 
     return {
         "evidence": evidence_dict,
         "retry_count": retry_count,
+        "prompt_tokens": state.get("prompt_tokens", 0),
+        "completion_tokens": state.get("completion_tokens", 0),
+        "deepseek_prompt_tokens": state.get("deepseek_prompt_tokens", 0),
+        "deepseek_completion_tokens": state.get("deepseek_completion_tokens", 0),
+        "gemini_prompt_tokens": state.get("gemini_prompt_tokens", 0),
+        "gemini_completion_tokens": state.get("gemini_completion_tokens", 0),
+        "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
 
 def verify_node(state: FactCheckState):
@@ -323,6 +380,8 @@ def verify_node(state: FactCheckState):
         "counts": {"true": 0, "false": 0, "nei": 0}
     }
     
+    gemini_prompt_tokens = state.get("gemini_prompt_tokens", 0)
+    gemini_completion_tokens = state.get("gemini_completion_tokens", 0)
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
 
@@ -330,7 +389,7 @@ def verify_node(state: FactCheckState):
     verify_max_retries = max(1, int(os.getenv("VERIFY_MAX_RETRIES", "1")))
 
     def _run_verify_once(claim: str, evidences_subset: list):
-        nonlocal prompt_tokens, completion_tokens
+        nonlocal prompt_tokens, completion_tokens, gemini_prompt_tokens, gemini_completion_tokens
         original_doc_short = _build_verify_context(
             state.get("input_text", "") or "",
             claim,
@@ -349,13 +408,15 @@ def verify_node(state: FactCheckState):
         verification_result = None
         for i in range(verify_max_retries):
             try:
-                response = llm.invoke(verify_prompt)
+                response = gemini_llm.invoke(verify_prompt)
                 cleaned_content = clean_json_response(response.content)
                 verification_result = json.loads(cleaned_content)
 
                 used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
                 prompt_tokens += used_prompt_tokens
                 completion_tokens += used_completion_tokens
+                gemini_prompt_tokens += used_prompt_tokens
+                gemini_completion_tokens += used_completion_tokens
 
                 if isinstance(verification_result, dict) and "factuality" in verification_result:
                     break
@@ -427,5 +488,8 @@ def verify_node(state: FactCheckState):
         "verdicts": verdicts,
         "overall_verdict": overall_verdict,
         "prompt_tokens": prompt_tokens,
-        "completion_tokens": completion_tokens
+        "completion_tokens": completion_tokens,
+        "gemini_prompt_tokens": gemini_prompt_tokens,
+        "gemini_completion_tokens": gemini_completion_tokens,
+        "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
