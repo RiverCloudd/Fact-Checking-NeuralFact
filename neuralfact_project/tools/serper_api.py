@@ -4,24 +4,36 @@ import os
 from core.config import SERPER_API_KEY
 import csv
 
-# Load unreliable sources from media bias CSV at module level (once)
+# Load source domains and unreliable sources from media bias CSV at module level (once)
 _UNRELIABLE_DOMAINS = set()
+_ALL_SOURCE_DOMAINS = set()
 _CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "media-bias-scrubbed-results.csv")
 if os.path.exists(_CSV_PATH):
     with open(_CSV_PATH, "r", encoding="utf-8") as _f:
         for _row in csv.DictReader(_f):
-            rating = _row.get("factual_reporting_rating", "").strip()
-            if rating in ("LOW", "VERY LOW"):
-                raw_url = _row.get("url", "").strip()
-                domain = urlparse(raw_url).netloc.lower().lstrip("www.")
-                if domain:
+            raw_url = _row.get("url", "").strip()
+            domain = urlparse(raw_url).netloc.lower().lstrip("www.")
+            if domain:
+                _ALL_SOURCE_DOMAINS.add(domain)
+                rating = _row.get("factual_reporting_rating", "").strip()
+                if rating in ("LOW", "VERY LOW"):
                     _UNRELIABLE_DOMAINS.add(domain)
 
 
+
+def _get_domain(link: str) -> str:
+    """Extract domain from a URL, normalized."""
+    return urlparse(link).netloc.lower().lstrip("www.")
+
 def _is_unreliable(link: str) -> bool:
     """Check if a URL's domain is in the unreliable sources list."""
-    domain = urlparse(link).netloc.lower().lstrip("www.")
+    domain = _get_domain(link)
     return domain in _UNRELIABLE_DOMAINS
+
+def _is_known_source(link: str) -> bool:
+    """Check if a URL's domain is in the known sources list."""
+    domain = _get_domain(link)
+    return domain in _ALL_SOURCE_DOMAINS
 
 def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") -> str:
     parts = []
@@ -98,30 +110,38 @@ def search_google(query: str, top_k: int = 3) -> list:
         # 1. Check for answer box first (most reliable)
         if "answerBox" in search_data:
             answer_box = search_data["answerBox"]
-            if "answer" in answer_box:
+            answer_link = answer_box.get("link", "")
+            # Only add if not unreliable and is a known source
+            if answer_link and (_is_unreliable(answer_link) or not _is_known_source(answer_link)):
+                pass
+            elif "answer" in answer_box:
                 evidences.append(_make_evidence_item(
                     title="Google Answer",
                     snippet=answer_box["answer"],
-                    url=answer_box.get("link", ""),
+                    url=answer_link,
                     source_type="answer_box",
                 ))
             elif "snippet" in answer_box:
                 evidences.append(_make_evidence_item(
                     title="Google Snippet",
                     snippet=answer_box["snippet"],
-                    url=answer_box.get("link", ""),
+                    url=answer_link,
                     source_type="answer_box",
                 ))
-                
+        
         # 2. Get knowledge graph if available
         if "knowledgeGraph" in search_data:
             kg = search_data["knowledgeGraph"]
             description = kg.get("description", "")
-            if description:
+            kg_url = kg.get("website", "") or kg.get("descriptionLink", "")
+            # Only add if not unreliable and is a known source
+            if kg_url and (_is_unreliable(kg_url) or not _is_known_source(kg_url)):
+                pass
+            elif description:
                 evidences.append(_make_evidence_item(
                     title=kg.get("title", "Knowledge Graph"),
                     snippet=description,
-                    url=kg.get("website", "") or kg.get("descriptionLink", ""),
+                    url=kg_url,
                     source_type="knowledge_graph",
                 ))
         
@@ -131,8 +151,7 @@ def search_google(query: str, top_k: int = 3) -> list:
                 snippet = result.get("snippet", "")
                 title = result.get("title", "")
                 link = result.get("link", "")
-                
-                if snippet and link and not _is_unreliable(link):
+                if snippet and link and not _is_unreliable(link) and _is_known_source(link):
                     evidences.append(_make_evidence_item(
                         title=title,
                         snippet=snippet,
