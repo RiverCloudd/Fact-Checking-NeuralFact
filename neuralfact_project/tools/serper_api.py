@@ -76,6 +76,13 @@ def _fetch_longer_snippet(url: str, max_length: int = 400) -> str:
 
 def _is_known_source(link: str) -> bool:
     domain = _get_domain(link)
+    # 1. Auto-pass cho các trang web nhà nước và giáo dục VN
+    if domain.endswith(".gov.vn") or domain.endswith(".edu.vn"):
+        return True
+        
+    # 2. TÍNH NĂNG MỚI: Auto-pass cho các trang tài liệu công nghệ
+    if domain.endswith(".dev") or domain.endswith(".io") or domain.startswith("docs."):
+        return True
     return any(domain == known or domain.endswith("." + known) for known in _ALL_SOURCE_DOMAINS)
 
 def _compose_evidence_text(title: str = "", snippet: str = "", url: str = "") -> str:
