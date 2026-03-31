@@ -20,4 +20,11 @@ class FactCheckState(TypedDict):
     overall_verdict: Dict[str, object]
     retry_count: int
     prompt_tokens: int      
-    completion_tokens: int  
+    completion_tokens: int
+    # Track tokens by model
+    deepseek_prompt_tokens: int
+    deepseek_completion_tokens: int
+    gemini_prompt_tokens: int
+    gemini_completion_tokens: int
+    # Temporal context
+    current_datetime: str  # ISO format: YYYY-MM-DD HH:MM:SS  

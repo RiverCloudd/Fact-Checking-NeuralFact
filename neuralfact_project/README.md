@@ -3,7 +3,7 @@
 NeuralFact la ung dung fact-check tieng Viet su dung:
 - LangGraph pipeline
 - Hybrid retrieval (Qdrant + Serper)
-- DeepSeek API (qua langchain-openai)
+- Gemini API (qua langchain-google-genai)
 - Streamlit UI
 
 ## Cong nghe chinh
@@ -11,7 +11,7 @@ NeuralFact la ung dung fact-check tieng Viet su dung:
 - Python 3.10+
 - Streamlit
 - LangGraph
-- LangChain OpenAI wrapper
+- LangChain Google GenAI wrapper
 - Qdrant Vector DB
 - Sentence Transformers + FastEmbed (hybrid search)
 - Serper API
@@ -21,7 +21,7 @@ NeuralFact la ung dung fact-check tieng Viet su dung:
 - Python 3.10+
 - Docker Desktop (de chay Qdrant)
 - API keys:
-  - `DEEPSEEK_API_KEY`
+  - `GEMINI_API_KEY` (hoac `GOOGLE_API_KEY`)
   - `SERPER_API_KEY`
 
 ## Cai dat (khuyen nghi tren Windows + Conda)
@@ -38,7 +38,7 @@ pip install -r requirements.txt
 Tao file `.env` trong thu muc `neuralfact_project`:
 
 ```env
-DEEPSEEK_API_KEY=your_deepseek_key
+GEMINI_API_KEY=your_gemini_key
 SERPER_API_KEY=your_serper_key
 ```
 

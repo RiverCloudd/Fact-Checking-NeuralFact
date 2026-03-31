@@ -1,0 +1,322 @@
+REVIEW: 304 URLs cần sửa
+====================================================================================================
+
+Báo (News): 54 URLs
+
+#    Site Name                                Current                             Suggested                          
+----------------------------------------------------------------------------------------------------
+1    Báo Ấp Bắc                               baoapbac.vn                         baoapbac.com.vn                    
+2    Báo Bắc Giang                            baobacgiang.vn                      baobacgiang.com.vn                 
+3    Báo Bắc Kạn                              baobackan.vn                        baobackan.com.vn                   
+4    Báo Bạc Liêu                             baobaclieu.vn                       baobaclieu.com.vn                  
+5    Báo Bình Định                            baobinhdinh.vn                      baobinhdinh.com.vn                 
+6    Báo Bình Dương                           baobinhduong.vn                     baobinhduong.com.vn                
+7    Báo Cà Mau                               baocamau.vn                         baocamau.com.vn                    
+8    Báo Cao Bằng                             baocaobang.vn                       baocaobang.com.vn                  
+9    Báo Chính phủ                            baochinhphu.vn                      baochinhphu.com.vn                 
+10   Báo Đắk Lắk                              baodaklak.vn                        baodaklak.com.vn                   
+11   Báo Đắk Nông                             baodaknong.vn                       baodaknong.com.vn                  
+12   Báo Đà Nẵng                              baodanang.vn                        baodanang.com.vn                   
+13   Báo Đấu thầu                             baodauthau.vn                       baodauthau.com.vn                  
+14   Báo Đầu tư                               baodautu.vn                         baodautu.com.vn                    
+15   Báo Đồng Khởi                            baodongkhoi.vn                      baodongkhoi.com.vn                 
+16   Báo Giao thông                           baogiaothong.vn                     baogiaothong.com.vn                
+17   Báo Hà Giang                             baohagiang.vn                       baohagiang.com.vn                  
+18   Báo Hải Dương                            baohaiduong.vn                      baohaiduong.com.vn                 
+19   Báo Hà Tĩnh                              baohatinh.vn                        baohatinh.com.vn                   
+20   Báo Hưng Yên                             baohungyen.vn                       baohungyen.com.vn                  
+21   Báo Khánh Hòa                            baokhanhhoa.vn                      baokhanhhoa.com.vn                 
+22   Báo Kiên Giang                           baokiengiang.vn                     baokiengiang.com.vn                
+23   Báo Lai Châu                             baolaichau.vn                       baolaichau.com.vn                  
+24   Báo Lâm Đồng                             baolamdong.vn                       baolamdong.com.vn                  
+25   Báo Lạng Sơn                             baolangson.vn                       baolangson.com.vn                  
+26   Báo Long An                              baolongan.vn                        baolongan.com.vn                   
+27   Báo Nam Định                             baonamdinh.vn                       baonamdinh.com.vn                  
+28   Báo Nghệ An                              baonghean.vn                        baonghean.com.vn                   
+29   Báo Pháp luật                            baophapluat.vn                      baophapluat.com.vn                 
+30   Báo Phụ nữ Thủ đô                        baophunuthudo.vn                    baophunuthudo.com.vn               
+31   Báo Phú Thọ                              baophutho.vn                        baophutho.com.vn                   
+32   Báo Phú Yên                              baophuyen.vn                        baophuyen.com.vn                   
+33   Báo Quảng Bình                           baoquangbinh.vn                     baoquangbinh.com.vn                
+34   Báo Quảng Nam                            baoquangnam.vn                      baoquangnam.com.vn                 
+35   Báo Quảng Ngãi                           baoquangngai.vn                     baoquangngai.com.vn                
+36   Báo Quảng Ninh                           baoquangninh.vn                     baoquangninh.com.vn                
+37   Báo Quảng Trị                            baoquangtri.vn                      baoquangtri.com.vn                 
+38   Báo Quốc tế                              baoquocte.vn                        baoquocte.com.vn                   
+39   Báo Tài nguyên & Môi trường              baotainguyenmoitruong.vn            baotainguyenmoitruong.com.vn       
+40   Báo Tây Ninh                             baotayninh.vn                       baotayninh.com.vn                  
+41   Báo Thái Nguyên                          baothainguyen.vn                    baothainguyen.com.vn               
+42   Báo Thanh Hóa                            baothanhhoa.vn                      baothanhhoa.com.vn                 
+43   Báo Thừa Thiên Huế                       baothuathienhue.vn                  baothuathienhue.com.vn             
+44   Báo Tin tức                              baotintuc.vn                        baotintuc.com.vn                   
+45   Báo Tiếng nói Việt Nam                   baotnvn.vn                          baotnvn.com.vn                     
+46   Báo Trà Vinh                             baotravinh.vn                       baotravinh.com.vn                  
+47   Báo Văn hóa                              baovanhoa.vn                        baovanhoa.com.vn                   
+48   Kinh tế và Dự báo                        kinhtevadubao.vn                    kinhtevadubao.com.vn               
+49   Thời báo Tài chính Việt Nam              thoibaotaichinhvietnam.vn           thoibaotaichinhvietnam.com.vn      
+50   Việt Báo                                 vietbao.vn                          vietbao.com.vn                     
+51   Công báo Chính phủ                       congbao.chinhphu.vn                 congbao.chinhphu.com.vn            
+52   Học viện Báo chí và Tuyên truyền         ajc.hcma.vn                         ajc.hcma.com.vn                    
+53   Báo Thể thao Việt Nam                    thethaovietnam.vn                   thethaovietnam.com.vn              
+54   Báo Kiểm toán                            baokiemtoan.vn                      baokiemtoan.com.vn                 
+
+Other: 233 URLs
+
+#    Site Name                                Current                             Suggested                          
+----------------------------------------------------------------------------------------------------
+1    1 Thế Giới                               1thegioi.vn                         1thegioi.com.vn                    
+2    Afamily                                  afamily.vn                          afamily.com.vn                     
+3    An ninh Thủ đô                           anninhthudo.vn                      anninhthudo.com.vn                 
+4    Bảo vệ Công lý                           baove.congly.vn                     baove.congly.com.vn                
+5    Bảo vệ Pháp luật                         baovephapluat.vn                    baovephapluat.com.vn               
+6    Bazaar Vietnam                           bazaarvietnam.vn                    bazaarvietnam.com.vn               
+7    Bizhub                                   bizhub.vn                           bizhub.com.vn                      
+8    Bnews                                    bnews.vn                            bnews.com.vn                       
+9    Bóng đá Plus                             bongdaplus.vn                       bongdaplus.com.vn                  
+10   CafeBiz                                  cafebiz.vn                          cafebiz.com.vn                     
+11   CafeF                                    cafef.vn                            cafef.com.vn                       
+12   CafeLand                                 cafeland.vn                         cafeland.com.vn                    
+13   Chuyển động Thị trường                   chuyendongthitruong.vn              chuyendongthitruong.com.vn         
+14   Cơ hội Giao thương                       cohoigiaothuong.vn                  cohoigiaothuong.com.vn             
+15   Công luận                                congluan.vn                         congluan.com.vn                    
+16   Công lý                                  congly.vn                           congly.com.vn                      
+17   Công thương                              congthuong.vn                       congthuong.com.vn                  
+18   Cosmolife                                cosmolife.vn                        cosmolife.com.vn                   
+19   Đại biểu Nhân dân                        daibieunhandan.vn                   daibieunhandan.com.vn              
+20   Đại đoàn kết                             daidoanket.vn                       daidoanket.com.vn                  
+21   Dân Việt                                 danviet.vn                          danviet.com.vn                     
+22   Đầu tư Thương mại                        daututhuongmai.vn                   daututhuongmai.com.vn              
+23   Diễn đàn Doanh nghiệp                    diendandoanhnghiep.vn               diendandoanhnghiep.com.vn          
+24   Điện tử Ứng dụng                         dientuungdung.vn                    dientuungdung.com.vn               
+25   Doanh nghiệp Cuộc sống                   doanhnghiepcuocsong.vn              doanhnghiepcuocsong.com.vn         
+26   Doanh nghiệp Hội nhập                    doanhnghiephoinhap.vn               doanhnghiephoinhap.com.vn          
+27   Doanh nghiệp Tiếp thị                    doanhnghieptiepthi.vn               doanhnghieptiepthi.com.vn          
+28   Doanh nghiệp và Đầu tư                   doanhnghiepvadautu.info.vn          doanhnghiepvadautu.info.com.vn     
+29   Doanh nghiệp và Thương mại               doanhnghiepvathuongmai.vn           doanhnghiepvathuongmai.com.vn      
+30   Doanh nghiệp VN                          doanhnghiepvn.vn                    doanhnghiepvn.com.vn               
+31   Doanh nhân Đời sống                      doanhnhandoisong.vn                 doanhnhandoisong.com.vn            
+32   Doanh nhân Hội nhập                      doanhnhanhoinhap.vn                 doanhnhanhoinhap.com.vn            
+33   Doanh nhân Plus                          doanhnhanplus.vn                    doanhnhanplus.com.vn               
+34   Doanh nhân Sài Gòn                       doanhnhansaigon.vn                  doanhnhansaigon.com.vn             
+35   Doanh nhân Thị trường                    doanhnhanthitruong.vn               doanhnhanthitruong.com.vn          
+36   Đời sống Tiêu dùng                       doisongtieudung.vn                  doisongtieudung.com.vn             
+37   Elle                                     elle.vn                             elle.com.vn                        
+38   Elleman                                  elleman.vn                          elleman.com.vn                     
+39   En Diễn đàn Doanh nghiệp                 en.diendandoanhnghiep.vn            en.diendandoanhnghiep.com.vn       
+40   En VnEconomy                             en.vneconomy.vn                     en.com.vneconomy.com.vn            
+41   English The Saigon Times                 english.thesaigontimes.vn           english.thesaigontimes.com.vn      
+42   Eva                                      eva.vn                              eva.com.vn                         
+43   Forbes                                   forbes.vn                           forbes.com.vn                      
+44   GenK                                     genk.vn                             genk.com.vn                        
+45   Gia đình Sức khỏe Đời sống               giadinh.suckhoedoisong.vn           giadinh.suckhoedoisong.com.vn      
+46   Gia đình Online                          giadinhonline.vn                    giadinhonline.com.vn               
+47   Gia đình và Pháp luật                    giadinhvaphapluat.vn                giadinhvaphapluat.com.vn           
+48   Giáo dục Thời đại                        giaoducthoidai.vn                   giaoducthoidai.com.vn              
+49   Giáo dục Thủ đô                          giaoducthudo.giaoducthoidai.vn      giaoducthudo.giaoducthoidai.com.vn 
+50   Hà Nội Mới                               hanoimoi.vn                         hanoimoi.com.vn                    
+51   Hà Nội Ngày Nay                          hanoingaynay.vn                     hanoingaynay.com.vn                
+52   Hoa Học Trò                              hoahoctro.tienphong.vn              hoahoctro.tienphong.com.vn         
+53   Infonet                                  infonet.vietnamnet.vn               infonet.vietnamnet.com.vn          
+54   Invest Global                            investglobal.vn                     investglobal.com.vn                
+55   Kênh 14                                  kenh14.vn                           kenh14.com.vn                      
+56   Khoa học Đời sống                        khoahocdoisong.vn                   khoahocdoisong.com.vn              
+57   Khoa học Phát triển                      khoahocphattrien.vn                 khoahocphattrien.com.vn            
+58   Khoa học Phổ thông                       khoahocphothong.vn                  khoahocphothong.com.vn             
+59   Kinh doanh Đời sống                      kinhdoanhdoisong.vn                 kinhdoanhdoisong.com.vn            
+60   Kinh doanh Net                           kinhdoanhnet.vn                     kinhdoanhnet.com.vn                
+61   Kinh doanh Plus                          kinhdoanhplus.vn                    kinhdoanhplus.com.vn               
+62   Kinh doanh và Tiếp thị                   kinhdoanhvatiepthi.vn               kinhdoanhvatiepthi.com.vn          
+63   Kinh tế Chứng khoán                      kinhtechungkhoan.vn                 kinhtechungkhoan.com.vn            
+64   Kinh tế Đời sống                         kinhtedoisong.vn                    kinhtedoisong.com.vn               
+65   Kinh tế Đô thị                           kinhtedothi.vn                      kinhtedothi.com.vn                 
+66   Kinh tế Môi trường                       kinhtemoitruong.vn                  kinhtemoitruong.com.vn             
+67   Kinh tế Nông thôn                        kinhtenongthon.vn                   kinhtenongthon.com.vn              
+68   Lao động                                 laodong.vn                          laodong.com.vn                     
+69   Lao động Thủ đô                          laodongthudo.vn                     laodongthudo.com.vn                
+70   Le Courrier                              lecourrier.vn                       lecourrier.com.vn                  
+71   Megafun                                  megafun.vn                          megafun.com.vn                     
+72   Môi trường và Đô thị                     moitruongvadothi.vn                 moitruongvadothi.com.vn            
+73   Mực Tím                                  muctim.tuoitre.vn                   muctim.tuoitre.com.vn              
+74   Ngày Nay                                 ngaynay.vn                          ngaynay.com.vn                     
+75   Nghe Nhìn Việt Nam                       nghenhinvietnam.vn                  nghenhinvietnam.com.vn             
+76   Người Đưa Tin                            nguoiduatin.vn                      nguoiduatin.com.vn                 
+77   Người Hà Nội                             nguoihanoi.vn                       nguoihanoi.com.vn                  
+78   Người Quan Sát                           nguoiquansat.vn                     nguoiquansat.com.vn                
+79   Nhà Đầu tư                               nhadautu.vn                         nhadautu.com.vn                    
+80   Nhân Dân                                 nhandan.vn                          nhandan.com.vn                     
+81   Nhà Quản lý                              nhaquanly.vn                        nhaquanly.com.vn                   
+82   Nhịp cầu Đầu tư                          nhipcaudautu.vn                     nhipcaudautu.com.vn                
+83   Nhịp sống Đô thị                         nhipsongdothi.vn                    nhipsongdothi.com.vn               
+84   Nhịp sống Kinh doanh                     nhipsongkinhdoanh.vn                nhipsongkinhdoanh.com.vn           
+85   Nhịp sống Kinh tế                        nhipsongkinhte.toquoc.vn            nhipsongkinhte.toquoc.com.vn       
+86   Nông nghiệp                              nongnghiep.vn                       nongnghiep.com.vn                  
+87   NSS                                      nss.vn                              nss.com.vn                         
+88   Petrotimes                               petrotimes.vn                       petrotimes.com.vn                  
+89   Pháp luật Plus                           phapluatplus.vn                     phapluatplus.com.vn                
+90   Pháp luật Xã hội                         phapluatxahoi.kinhtedothi.vn        phapluatxahoi.kinhtedothi.com.vn   
+91   Phụ nữ Hiện đại                          phunuhiendai.vn                     phunuhiendai.com.vn                
+92   Phụ nữ Online                            phunuonline.vn                      phunuonline.com.vn                 
+93   Phụ nữ Việt Nam                          phunuvietnam.vn                     phunuvietnam.com.vn                
+94   PLO                                      plo.vn                              plo.com.vn                         
+95   Quân đội Nhân dân                        qdnd.vn                             qdnd.com.vn                        
+96   Quản lý Thị trường                       qltt.vn                             qltt.com.vn                        
+97   Saigon News                              saigonnews.vn                       saigonnews.com.vn                  
+98   Sài Gòn Tiếp thị                         sgtiepthi.vn                        sgtiepthi.com.vn                   
+99   Soha                                     soha.vn                             soha.com.vn                        
+100  Stockbiz                                 stockbiz.vn                         stockbiz.com.vn                    
+101  Sức khỏe Đời sống                        suckhoedoisong.vn                   suckhoedoisong.com.vn              
+102  Sinh viên Việt Nam                       svvn.tienphong.vn                   svvn.tienphong.com.vn              
+103  Thanh Niên                               thanhnien.vn                        thanhnien.com.vn                   
+104  Thanh Niên Việt                          thanhnienviet.vn                    thanhnienviet.com.vn               
+105  Thế giới Hội nhập                        thegioihoinhap.vn                   thegioihoinhap.com.vn              
+106  Thế giới Tiếp thị                        thegioitiepthi.danviet.vn           thegioitiepthi.danviet.com.vn      
+107  The Investor                             theinvestor.vn                      theinvestor.com.vn                 
+108  The Saigon Times                         thesaigontimes.vn                   thesaigontimes.com.vn              
+109  Thể thao Văn hóa                         thethaovanhoa.vn                    thethaovanhoa.com.vn               
+110  Thị trường Tài chính Tiền tệ             thitruongtaichinhtiente.vn          thitruongtaichinhtiente.com.vn     
+111  Thương gia Online                        thuonggiaonline.vn                  thuonggiaonline.com.vn             
+112  Thương gia Thị trường                    thuonggiathitruong.vn               thuonggiathitruong.com.vn          
+113  Thương hiệu Sản phẩm                     thuonghieusanpham.vn                thuonghieusanpham.com.vn           
+114  Thương hiệu và Pháp luật                 thuonghieuvaphapluat.vn             thuonghieuvaphapluat.com.vn        
+115  Tiền Phong                               tienphong.vn                        tienphong.com.vn                   
+116  Tiếp thị Đầu tư 24h                      tiepthidautu24h.vn                  tiepthidautu24h.com.vn             
+117  Tiếp thị và Gia đình                     tiepthivagiadinh.vn                 tiepthivagiadinh.com.vn            
+118  Tiin                                     tiin.vn                             tiin.com.vn                        
+119  Tinh Tế                                  tinhte.vn                           tinhte.com.vn                      
+120  Tin nhanh Chứng khoán                    tinnhanhchungkhoan.vn               tinnhanhchungkhoan.com.vn          
+121  Tin tức                                  tintuc.vn                           tintuc.com.vn                      
+122  Tin tức Việt Nam                         tintucvietnam.vn                    tintucvietnam.com.vn               
+123  Tổ Quốc                                  toquoc.vn                           toquoc.com.vn                      
+124  TTVN Tổ quốc                             ttvn.toquoc.vn                      ttvn.toquoc.com.vn                 
+125  Tuổi Trẻ                                 tuoitre.vn                          tuoitre.com.vn                     
+126  Tuổi Trẻ News                            tuoitrenews.vn                      tuoitrenews.com.vn                 
+127  Tuyên giáo                               tuyengiao.vn                        tuyengiao.com.vn                   
+128  VCCI News                                vccinews.vn                         vccinews.com.vn                    
+129  VEF                                      vef.vn                              vef.com.vn                         
+130  VEN Công thương                          ven.congthuong.vn                   ven.congthuong.com.vn              
+131  Vietdaily                                vietdaily.vn                        vietdaily.com.vn                   
+132  Vietnambiz                               vietnambiz.vn                       vietnambiz.com.vn                  
+133  Vietnam Finance                          vietnamfinance.vn                   vietnamfinance.com.vn              
+134  Việt Nam Hội nhập                        vietnamhoinhap.vn                   vietnamhoinhap.com.vn              
+135  Vietnamnet                               vietnamnet.vn                       vietnamnet.com.vn                  
+136  Vietnam News                             vietnamnews.vn                      vietnamnews.com.vn                 
+137  Vietnamplus                              vietnamplus.vn                      vietnamplus.com.vn                 
+138  Vietpress                                vietpress.vn                        vietpress.com.vn                   
+139  VietQ                                    vietq.vn                            vietq.com.vn                       
+140  Vietstock                                vietstock.vn                        vietstock.com.vn                   
+141  Viettimes                                viettimes.vn                        viettimes.com.vn                   
+142  Vinacorp                                 vinacorp.vn                         vinacorp.com.vn                    
+143  VJST                                     vjst.vn                             vjst.com.vn                        
+144  VLR                                      vlr.vn                              vlr.com.vn                         
+145  VNBusiness                               vnbusiness.vn                       vnbusiness.com.vn                  
+146  VnEconomy                                vneconomy.vn                        vneconomy.com.vn                   
+147  VNFinance                                vnfinance.vn                        vnfinance.com.vn                   
+148  VNMedia                                  vnmedia.vn                          vnmedia.com.vn                     
+149  VNReview                                 vnreview.vn                         vnreview.com.vn                    
+150  VOV                                      vov.vn                              vov.com.vn                         
+151  VOV Giao thông                           vovgiaothong.vn                     vovgiaothong.com.vn                
+152  VTC News                                 vtcnews.vn                          vtcnews.com.vn                     
+153  VTV                                      vtv.vn                              vtv.com.vn                         
+154  Yan                                      yan.vn                              yan.com.vn                         
+155  Znews                                    znews.vn                            znews.com.vn                       
+156  Cục Quản lý Khám chữa bệnh               kcb.vn                              kcb.com.vn                         
+157  Viện Huyết học - Truyền máu TW           vienhuyethoc.vn                     vienhuyethoc.com.vn                
+158  Bệnh viện Chợ Rẫy                        choray.vn                           choray.com.vn                      
+159  Bệnh viện Trung ương Quân đội 108        benhvien108.vn                      benhvien108.com.vn                 
+160  Bệnh viện K                              benhvienk.vn                        benhvienk.com.vn                   
+161  Bệnh viện Bệnh Nhiệt đới TW              bvbnd.vn                            bvbnd.com.vn                       
+162  Bệnh viện Quân y 175                     benhvien175.vn                      benhvien175.com.vn                 
+163  Bệnh viện Đa khoa Tâm Anh                tamanhhospital.vn                   tamanhhospital.com.vn              
+164  Bệnh viện Đa khoa Quốc tế Thu Cúc        benhvienthucuc.vn                   benhvienthucuc.com.vn              
+165  Bệnh viện Đa khoa Medlatec               medlatec.vn                         medlatec.com.vn                    
+166  Bệnh viện Hồng Ngọc                      hongngochospital.vn                 hongngochospital.com.vn            
+167  BookingCare                              bookingcare.vn                      bookingcare.com.vn                 
+168  Nhà thuốc Pharmacity                     pharmacity.vn                       pharmacity.com.vn                  
+169  Cổng Thông tin điện tử Chính phủ         chinhphu.vn                         chinhphu.com.vn                    
+170  Tổng Liên đoàn Lao động Việt Nam         congdoan.vn                         congdoan.com.vn                    
+171  Trung tâm WTO và Hội nhập                trungtamwto.vn                      trungtamwto.com.vn                 
+172  Cục Cảnh sát Giao thông                  csgt.vn                             csgt.com.vn                        
+173  Thư viện Pháp luật                       thuvienphapluat.vn                  thuvienphapluat.com.vn             
+174  Luật Việt Nam                            luatvietnam.vn                      luatvietnam.com.vn                 
+175  Cơ sở dữ liệu Quốc gia về Văn bản QPPL   vbpl.vn                             vbpl.com.vn                        
+176  Cổng Thông tin điện tử Quốc hội          quochoi.vn                          quochoi.com.vn                     
+177  Luật sư X                                luatsux.vn                          luatsux.com.vn                     
+178  Luật Minh Khuê                           luatminhkhue.vn                     luatminhkhue.com.vn                
+179  Luật Dương Gia                           luatduonggia.vn                     luatduonggia.com.vn                
+180  Luật Hoàng Phi                           luathoangphi.vn                     luathoangphi.com.vn                
+181  Phan Law Vietnam                         phan.vn                             phan.com.vn                        
+182  Luật Quang Huy                           luatquanghuy.vn                     luatquanghuy.com.vn                
+183  Luật Hùng Sơn                            luathungson.vn                      luathungson.com.vn                 
+184  Công ty Luật ACC                         accgroup.vn                         accgroup.com.vn                    
+185  Trung tâm Trọng tài Quốc tế Việt Nam (V  viac.vn                             viac.com.vn                        
+186  Luật Trí Minh                            luattriminh.vn                      luattriminh.com.vn                 
+187  Luật Trần và Liên danh                   luattran.vn                         luattran.com.vn                    
+188  Học viện Chính trị Quốc gia Hồ Chí Minh  hcma.vn                             hcma.com.vn                        
+189  Trang tin Khám phá                       khampha.vn                          khampha.com.vn                     
+190  Bảo tàng Lịch sử Quốc gia                baotanglichsu.vn                    baotanglichsu.com.vn               
+191  Bảo tàng Hồ Chí Minh                     baotanghochiminh.vn                 baotanghochiminh.com.vn            
+192  Hội Khoa học Lịch sử Việt Nam            lichsu.vn                           lichsu.com.vn                      
+193  Cổng thông tin Hội Nhà văn VN            vanvn.vn                            vanvn.com.vn                       
+194  Nhà xuất bản Giáo dục Việt Nam           nxbgd.vn                            nxbgd.com.vn                       
+195  Viện Toán học                            math.ac.vn                          math.ac.com.vn                     
+196  Viện Vật lý                              iop.vast.ac.vn                      iop.vast.ac.com.vn                 
+197  Trung tâm Ứng cứu khẩn cấp không gian m  vncert.vn                           vncert.com.vn                      
+198  Trung tâm Internet Việt Nam (VNNIC)      vnnic.vn                            vnnic.com.vn                       
+199  Chuyên trang ICTNews (Vietnamnet)        ictnews.vietnamnet.vn               ictnews.vietnamnet.com.vn          
+200  Techrum                                  techrum.vn                          techrum.com.vn                     
+201  Sforum (CellphoneS)                      sforum.vn                           sforum.com.vn                      
+202  TopDev                                   topdev.vn                           topdev.com.vn                      
+203  Techtalk                                 techtalk.vn                         techtalk.com.vn                    
+204  Download.vn                              download.vn                         download.com.vn                    
+205  Diễn đàn WhiteHat                        whitehat.vn                         whitehat.com.vn                    
+206  Viettel Solutions                        solutions.viettel.vn                solutions.viettel.com.vn           
+207  Liên đoàn Điền kinh Việt Nam             dienkinh.vn                         dienkinh.com.vn                    
+208  Liên đoàn Bóng rổ Việt Nam               vbf.vn                              vbf.com.vn                         
+209  Công ty Cổ phần Bóng đá Chuyên nghiệp V  vpf.vn                              vpf.com.vn                         
+210  Webthethao                               webthethao.vn                       webthethao.com.vn                  
+211  Thể thao 247                             thethao247.vn                       thethao247.com.vn                  
+212  iRace                                    irace.vn                            irace.com.vn                       
+213  Bóng đá 24h                              bongda24h.vn                        bongda24h.com.vn                   
+214  Viện Chăn nuôi                           nias.go.vn                          nias.go.com.vn                     
+215  Thị trường Nông nghiệp                   thitruongnongnghiep.vn              thitruongnongnghiep.com.vn         
+216  Mạng Nông nghiệp                         mangnongnghiep.vn                   mangnongnghiep.com.vn              
+217  Tập đoàn Lộc Trời                        loctroi.vn                          loctroi.com.vn                     
+218  Đài tiếng nói Việt Nam (Kênh Đối ngoại)  vovworld.vn                         vovworld.com.vn                    
+219  Quê Hương Online                         quehuongonline.vn                   quehuongonline.com.vn              
+220  Cổng thông tin Việc làm Ngoài nước       vieclamngoainuoc.vn                 vieclamngoainuoc.com.vn            
+221  Sở Giao dịch Chứng khoán TP.HCM (HOSE)   hsx.vn                              hsx.com.vn                         
+222  Sở Giao dịch Chứng khoán Hà Nội (HNX)    hnx.vn                              hnx.com.vn                         
+223  Tổng công ty Lưu ký và Bù trừ chứng kho  vsd.vn                              vsd.com.vn                         
+224  Hiệp hội Kinh doanh Chứng khoán VN (VAS  vasb.vn                             vasb.com.vn                        
+225  Vietstock Finance                        finance.vietstock.vn                finance.vietstock.com.vn           
+226  Chuyên trang Chứng khoán (CafeF)         s.cafef.vn                          s.cafef.com.vn                     
+227  FireAnt (Dữ liệu chứng khoán)            fireant.vn                          fireant.com.vn                     
+228  WiChart (Nền tảng dữ liệu kinh tế)       wichart.vn                          wichart.com.vn                     
+229  The Leader                               theleader.vn                        theleader.com.vn                   
+230  CTCP Chứng khoán KIS Việt Nam            kisvn.vn                            kisvn.com.vn                       
+231  CTCP Chứng khoán Pinetree                pinetree.vn                         pinetree.com.vn                    
+232  Ngân hàng TMCP Công Thương VN (VietinBa  vietinbank.vn                       vietinbank.com.vn                  
+233  Cổng thông tin xếp hạng tín nhiệm (Fiin  fiinratings.vn                      fiinratings.com.vn                 
+
+Tạp Chí (Magazine): 17 URLs
+
+#    Site Name                                Current                             Suggested                          
+----------------------------------------------------------------------------------------------------
+1    Tạp chí Công thương                      tapchicongthuong.vn                 tapchicongthuong.org.vn            
+2    Tạp chí Giao thông                       tapchigiaothong.vn                  tapchigiaothong.org.vn             
+3    Tạp chí Lao động                         tapchilaodong.vn                    tapchilaodong.org.vn               
+4    Tạp chí Mặt trận                         tapchimattran.vn                    tapchimattran.org.vn               
+5    Tạp chí Môi trường                       tapchimoitruong.vn                  tapchimoitruong.org.vn             
+6    Tạp chí Tài chính                        tapchitaichinh.vn                   tapchitaichinh.org.vn              
+7    Tạp chí Y học Cộng đồng                  tapchiyhoccongdong.vn               tapchiyhoccongdong.org.vn          
+8    Tạp chí Tòa án nhân dân                  tapchitoaan.vn                      tapchitoaan.org.vn                 
+9    Tạp chí Kiểm sát                         kiemsat.vn                          kiemsat.org.vn                     
+10   Tạp chí Luật học                         tapchiluathoc.vn                    tapchiluathoc.org.vn               
+11   Tạp chí Nghề Luật                        ngheluat.vn                         ngheluat.org.vn                    
+12   Tạp chí An toàn thông tin                antoanthongtin.vn                   antoanthongtin.org.vn              
+13   Tạp chí Nông thôn mới                    nongthonmoi.vn                      nongthonmoi.org.vn                 
+14   Tạp chí Chăn nuôi Việt Nam               nhachannuoi.vn                      nhachannuoi.org.vn                 
+15   Tạp chí Đối ngoại                        tapchidoingoai.vn                   tapchidoingoai.org.vn              
+16   Tạp chí Hữu nghị                         tapchihuunghi.vn                    tapchihuunghi.org.vn               
+17   Tạp chí eFinance                         efinance.vn                         efinance.org.vn                    
+
