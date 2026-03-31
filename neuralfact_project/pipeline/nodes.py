@@ -471,18 +471,14 @@ def verify_node(state: FactCheckState):
                 "correction": "Chưa thể kết luận mệnh đề này là đúng."
             }, 0, 0
 
-        # Check if all evidence sources are unverified
-        all_unverified = all(ev.get("tier") == "unverified" for ev in evidences if isinstance(ev, dict))
-        if all_unverified:
-            return claim, {
-                "factuality": False,
-                "reasoning": "Tất cả nguồn bằng chứng chưa được xác thực. Không thể đưa ra kết luận.",
-                "error": "Unverified sources only",
-                "correction": "Cần bằng chứng từ các nguồn đã xác thực."
-            }, 0, 0
-
         first_pass = evidences[:verify_evidences_per_claim]
         verdict, p_tok, c_tok = _run_verify_once(claim, first_pass)
+        
+        # Check if any unverified evidence sources are used
+        has_unverified = any(ev.get("tier") == "unverified" for ev in first_pass if isinstance(ev, dict))
+        if has_unverified:
+            verdict["unverified_sources_used"] = True
+            
         return claim, verdict, p_tok, c_tok
 
     with ThreadPoolExecutor(max_workers=max_parallel_verify) as executor:
@@ -505,7 +501,13 @@ def verify_node(state: FactCheckState):
     true_count = 0
     false_count = 0
     nei_count = 0
+    unverified_claims_count = 0
     for item in verdicts.values():
+        if item.get("unverified_sources_used"):
+            unverified_claims_count += 1
+            if "reasoning" in item:
+                item["reasoning"] += " (Chú ý: Kết luận này bao gồm nguồn chưa được kiểm duyệt)."
+                
         error = item.get("error", "").lower()
         # If error is "unverified sources only", classify as NEI
         if error == "unverified sources only":
@@ -529,6 +531,9 @@ def verify_node(state: FactCheckState):
             deterministic_summary = "Không đủ nguồn bằng chứng xác thực để kết luận."
         else:
             deterministic_summary = "Không đủ căn cứ để xác nhận bản tin là đúng."
+            
+    if unverified_claims_count > 0:
+        deterministic_summary += f" (Chú thích: Có {unverified_claims_count} mệnh đề được đối chiếu với nguồn thông tin chưa qua kiểm duyệt)."
 
     # Prefer deterministic article verdict for consistency.
     overall_verdict["factuality"] = deterministic_article
