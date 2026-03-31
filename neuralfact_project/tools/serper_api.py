@@ -4,6 +4,8 @@ import os
 from core.config import SERPER_API_KEY
 import csv
 import re
+from bs4 import BeautifulSoup
+from functools import lru_cache
 
 # Load source domains from media bias CSV at module level (once)
 _ALL_SOURCE_DOMAINS = set()
@@ -39,6 +41,7 @@ def _get_domain(link: str) -> str:
         domain = domain[4:]
     return domain
 
+@lru_cache(maxsize=128)
 def _fetch_longer_snippet(url: str, max_length: int = 400) -> str:
     """Fetch page and extract longer snippet from first paragraph(s)
     
@@ -53,25 +56,43 @@ def _fetch_longer_snippet(url: str, max_length: int = 400) -> str:
         response = requests.get(url, timeout=2)
         response.encoding = 'utf-8'
         html = response.text
+
+        soup = BeautifulSoup(html, "lxml")
         
-        # Extract paragraphs: <p>...</p> or <div class="content">...</div>
-        paragraphs = re.findall(r'<p[^>]*>([^<]+)</p>', html)
+        # Remove script and style elements
+        for script in soup(["script", "style", "meta", "noscript"]):
+            script.decompose()
+
+        paragraphs = soup.find_all('p')
         
         if not paragraphs:
-            # Fallback: look for divs with content
-            paragraphs = re.findall(r'<div[^>]*class="[^"]*content[^"]*"[^>]*>([^<]+)</div>', html)
-        
+            # Fallback for divs with content-related classes/ids if no <p> tags
+            content_div = soup.find('div', class_=re.compile(r'content|article|body', re.I))
+            if content_div:
+                paragraphs = content_div.find_all(['p', 'div'])
+
         if paragraphs:
-            # Join first 2-3 paragraphs
-            snippet = ' '.join(p.strip() for p in paragraphs[:3])
-            # Clean HTML entities
-            snippet = re.sub(r'&[a-z]+;', '', snippet)
-            # Remove extra spaces
-            snippet = re.sub(r'\s+', ' ', snippet).strip()
-            return snippet[:max_length]
-    except:
+            # Join text from first 3-5 significant paragraphs
+            valid_texts = []
+            current_length = 0
+            for p in paragraphs:
+                text = p.get_text(separator=' ', strip=True)
+                # Hạ mức filter từ 40 xuống 20 để không bỏ sót các bullet points ngắn như "Tên đầy đủ:..."
+                if len(text) > 20: 
+                    valid_texts.append(text)
+                    current_length += len(text)
+                
+                # Tính tổng độ dài, nếu đã đủ max_length thì dừng sớm
+                if current_length > max_length:
+                    break
+
+            if valid_texts:
+                snippet = ' '.join(valid_texts)
+                snippet = re.sub(r'\s+', ' ', snippet).strip()
+                return snippet[:max_length]
+    except Exception as e:
         pass
-    
+
     return ""
 
 def _is_known_source(link: str) -> bool:

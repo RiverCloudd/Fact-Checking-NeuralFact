@@ -110,6 +110,22 @@ def _content_to_text(content) -> str:
                 parts.append(str(item))
         return "\n".join(p for p in parts if p).strip()
 
+    if getattr(content, "content", None) is not None:
+        # LangChain specific extraction
+        lc_content = getattr(content, "content", "")
+        if isinstance(lc_content, str):
+            return lc_content
+        elif isinstance(lc_content, list):
+            parts = []
+            for item in lc_content:
+                if isinstance(item, str):
+                    parts.append(item)
+                elif isinstance(item, dict):
+                    text = item.get("text")
+                    if text is not None:
+                        parts.append(str(text))
+            return "\n".join(p for p in parts if p).strip()
+
     if isinstance(content, dict):
         text = content.get("text")
         if text is not None:
@@ -389,7 +405,9 @@ def verify_node(state: FactCheckState):
     verify_max_retries = max(1, int(os.getenv("VERIFY_MAX_RETRIES", "1")))
 
     def _run_verify_once(claim: str, evidences_subset: list):
-        nonlocal prompt_tokens, completion_tokens, gemini_prompt_tokens, gemini_completion_tokens
+        used_p_tokens = 0
+        used_c_tokens = 0
+        
         original_doc_short = _build_verify_context(
             state.get("input_text", "") or "",
             claim,
@@ -403,20 +421,21 @@ def verify_node(state: FactCheckState):
             evidence=evidence_text,
         ).strip()
 
-        # print(f"\n🧪 Verify prompt for claim: '{claim}'\n{verify_prompt}\n")
-
         verification_result = None
         for i in range(verify_max_retries):
             try:
-                response = gemini_llm.invoke(verify_prompt)
-                cleaned_content = clean_json_response(response.content)
+                # Trích xuất nội dung text ra trước nếu LangChain trả về mảng dict
+                raw_response = gemini_llm.invoke(verify_prompt)
+                
+                content_text = _content_to_text(raw_response.content if hasattr(raw_response, 'content') else raw_response)
+                
+                cleaned_content = clean_json_response(content_text)
+                
                 verification_result = json.loads(cleaned_content)
 
-                used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
-                prompt_tokens += used_prompt_tokens
-                completion_tokens += used_completion_tokens
-                gemini_prompt_tokens += used_prompt_tokens
-                gemini_completion_tokens += used_completion_tokens
+                _p_tokens, _c_tokens = _extract_token_usage(raw_response)
+                used_p_tokens += _p_tokens
+                used_c_tokens += _c_tokens
 
                 if isinstance(verification_result, dict) and "factuality" in verification_result:
                     break
@@ -438,33 +457,49 @@ def verify_node(state: FactCheckState):
         verification_result["factuality"] = _normalize_factuality(
             verification_result.get("factuality", "NEI")
         )
-        return verification_result
+        return verification_result, used_p_tokens, used_c_tokens
     
-    for claim, evidences in claim_evidence_dict.items():
+    # CHẠY XÁC MINH SONG SONG KẾT HỢP XỬ LÝ LỖI
+    max_parallel_verify = max(1, int(os.getenv("MAX_PARALLEL_VERIFY", "3")))
+    
+    def _verify_wrapper(claim: str, evidences: list):
         if not evidences:
-            verdicts[claim] = {
+            return claim, {
                 "factuality": False,
                 "reasoning": "Không tìm thấy đủ bằng chứng để xác nhận mệnh đề.",
                 "error": "Thiếu căn cứ xác minh",
                 "correction": "Chưa thể kết luận mệnh đề này là đúng."
-            }
-            continue
+            }, 0, 0
 
         # Check if all evidence sources are unverified
         all_unverified = all(ev.get("tier") == "unverified" for ev in evidences if isinstance(ev, dict))
         if all_unverified:
-            verdicts[claim] = {
+            return claim, {
                 "factuality": False,
                 "reasoning": "Tất cả nguồn bằng chứng chưa được xác thực. Không thể đưa ra kết luận.",
                 "error": "Unverified sources only",
                 "correction": "Cần bằng chứng từ các nguồn đã xác thực."
-            }
-            continue
+            }, 0, 0
 
         first_pass = evidences[:verify_evidences_per_claim]
-        verification_result = _run_verify_once(claim, first_pass)
+        verdict, p_tok, c_tok = _run_verify_once(claim, first_pass)
+        return claim, verdict, p_tok, c_tok
 
-        verdicts[claim] = verification_result
+    with ThreadPoolExecutor(max_workers=max_parallel_verify) as executor:
+        futures = {
+            executor.submit(_verify_wrapper, claim, evidences): claim 
+            for claim, evidences in claim_evidence_dict.items()
+        }
+        for future in as_completed(futures):
+            try:
+                claim, result, p_tok, c_tok = future.result()
+                verdicts[claim] = result
+                prompt_tokens += p_tok
+                completion_tokens += c_tok
+                gemini_prompt_tokens += p_tok
+                gemini_completion_tokens += c_tok
+            except Exception as e:
+                print(f"Error executing verification wrapper: {e}")
 
     # Deterministic fallback counts to keep article conclusion stable.
     true_count = 0
