@@ -183,23 +183,25 @@ def decompose_node(state: FactCheckState):
     current_datetime = datetime.fromisoformat(state.get("current_datetime", datetime.now().isoformat()))
     current_date = current_datetime.date()
     
+    max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
+    
     user_input = prompt_config.decompose_prompt.format(
         doc=state["input_text"],
-        max_claims=max(1, int(os.getenv("MAX_CLAIMS", "3"))),
+        max_claims=max_claims,
         current_date=current_date.strftime('%d/%m/%Y'),
     ).strip()
     
     deepseek_prompt_tokens = state.get("deepseek_prompt_tokens", 0)
     deepseek_completion_tokens = state.get("deepseek_completion_tokens", 0)
+    gemini_prompt_tokens = state.get("gemini_prompt_tokens", 0)
+    gemini_completion_tokens = state.get("gemini_completion_tokens", 0)
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
-
-    max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
-    # Keep retries low for latency-first mode.
     decompose_max_retries = max(1, int(os.getenv("DECOMPOSE_MAX_RETRIES", "1")))
 
     # Try to get valid claims
     claims = []
+    
     for i in range(decompose_max_retries):
         try:
             response = deepseek_llm.invoke(user_input)
@@ -240,6 +242,8 @@ def decompose_node(state: FactCheckState):
         "completion_tokens": completion_tokens,
         "deepseek_prompt_tokens": deepseek_prompt_tokens,
         "deepseek_completion_tokens": deepseek_completion_tokens,
+        "gemini_prompt_tokens": gemini_prompt_tokens,
+        "gemini_completion_tokens": gemini_completion_tokens,
         "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
 
@@ -254,6 +258,8 @@ def checkworthy_node(state: FactCheckState):
     max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
     deepseek_prompt_tokens = state.get("deepseek_prompt_tokens", 0)
     deepseek_completion_tokens = state.get("deepseek_completion_tokens", 0)
+    gemini_prompt_tokens = state.get("gemini_prompt_tokens", 0)
+    gemini_completion_tokens = state.get("gemini_completion_tokens", 0)
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
     checkworthy_max_retries = max(1, int(os.getenv("CHECKWORTHY_MAX_RETRIES", "1")))
@@ -269,6 +275,8 @@ def checkworthy_node(state: FactCheckState):
             "completion_tokens": completion_tokens,
             "deepseek_prompt_tokens": deepseek_prompt_tokens,
             "deepseek_completion_tokens": deepseek_completion_tokens,
+            "gemini_prompt_tokens": gemini_prompt_tokens,
+            "gemini_completion_tokens": gemini_completion_tokens,
             "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
         }
 
@@ -321,6 +329,8 @@ def checkworthy_node(state: FactCheckState):
         "completion_tokens": completion_tokens,
         "deepseek_prompt_tokens": deepseek_prompt_tokens,
         "deepseek_completion_tokens": deepseek_completion_tokens,
+        "gemini_prompt_tokens": gemini_prompt_tokens,
+        "gemini_completion_tokens": gemini_completion_tokens,
         "current_datetime": state.get("current_datetime", datetime.now().isoformat()),
     }
 
