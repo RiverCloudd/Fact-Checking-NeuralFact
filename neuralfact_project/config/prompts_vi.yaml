@@ -3,10 +3,10 @@ decompose_prompt: |
   Trả JSON duy nhất: {{"claims": ["..."]}}.
 
   Quy tắc:
-  1. Mỗi claim phải tự chứa đầy đủ thông tin, không phụ thuộc vào câu trước hoặc sau, không dùng đại từ mơ hồ.
+  1. Mỗi claim phải tự chứa đầy đủ thông tin (chủ thể, thời gian, địa điểm, sự kiện liên quan) để có thể hiểu được sự thật mà không cần đọc câu trước hoặc sau. 
   2. Giữ nguyên nội dung gốc, không sửa sai, không thêm kiến thức ngoài văn bản.
   3. Không suy diễn. Chỉ viết lại các ý xuất hiện rõ ràng.
-  4. Thay đại từ mơ hồ bằng chủ thể đầy đủ nếu có trong câu gốc.
+  4. TUYỆT ĐỐI bế toàn bộ bối cảnh (thời gian cụ thể, sự kiện, địa điểm) từ mệnh đề trước gắn vào mệnh đề sau nếu mệnh đề sau có tính kế thừa. Thay đại từ mơ hồ bằng chủ thể đầy đủ.
   5. Mỗi claim ngắn gọn, độc lập, có thể kiểm chứng.
   6. **Normalize temporal references**: Nếu claim chứa từ tương đối về thời gian (hôm nay, hôm qua, tuần này, tháng trước, năm ngoái, v.v.), hãy thay bằng ngày/tháng cụ thể dựa trên hôm nay là {current_date}. Model tự suy ra động:
      - Ví dụ: "Tổng thống hiện nay của Việt Nam là Tô Lâm" → "Tổng thống ngày 26/3/2026 của Việt Nam là Tô Lâm"
@@ -17,6 +17,9 @@ decompose_prompt: |
   Ví dụ decompose:
   - Văn bản: "Obama là tổng thống thứ 44 của Anh. Ông sinh năm 1961 tại Hawaii."
     → {{"claims": ["Obama là tổng thống thứ 44 của Anh.", "Obama sinh năm 1961 tại Hawaii."]}}
+
+  - Văn bản: "VinFast niêm yết trên NYSE vào 15/8/2023. Ngay sau phiên giao dịch đầu tiên, vốn hóa đạt 100 tỷ USD."
+    → {{"claims": ["VinFast niêm yết trên sàn NYSE vào ngày 15/8/2023.", "Ngay sau phiên giao dịch đầu tiên trên sàn NYSE vào ngày 15/8/2023, vốn hóa của VinFast đạt 100 tỷ USD."]}}
 
   - Văn bản: "Hôm nay trời mưa. Tôi hôm nay không đi làm."
     → {{"claims": ["Ngày 26/3/2026 trời mưa.", "Ngày 26/3/2026 tôi không đi làm."]}}
@@ -63,9 +66,10 @@ verify_prompt: |
   TUYỆT ĐỐI KHÔNG sử dụng kiến thức nền của bạn. Hãy coi [Bằng chứng] là sự thật tuyệt đối.
 
   Quy tắc đánh giá:
-  1. Nếu bằng chứng trực tiếp xác nhận, hoặc chứa các từ khóa đồng nghĩa chứng minh [Mệnh đề] là đúng -> factuality: true.
-  2. Việc bằng chứng là các đoạn trích ngắn (snippets) hoặc tiêu đề câu hỏi không làm giảm tính xác thực nếu nội dung bên trong nó ủng hộ mệnh đề.
-  3. Chỉ trả về false khi bằng chứng trực tiếp phủ nhận [Mệnh đề], hoặc hoàn toàn không liên quan.
+  1. Yêu cầu khớp TOÀN BỘ CHI TIẾT: [Mệnh đề] chỉ được đánh giá là đúng nếu bằng chứng xác nhận đầy đủ mọi yếu tố cốt lõi (chủ đề, con số, địa điểm VÀ THỜI GIAN/SỰ KIỆN CỤ THỂ). 
+  2. BẮT LỖI GHÉP NỐI SAI (Mismatched Time/Event): Mệnh đề khẳng định "sự kiện X đạt kết quả Y vào thời điểm T1" nhưng Bằng chứng cho thấy "sự kiện X đạt kết quả Y vào thời điểm T2" -> BẮT BUỘC ĐÁNH GIÁ FALSE. (Ví dụ: "Vượt mốc 100 tỷ ngay phiên đầu tiên" nhưng nguồn ghi "Vượt mốc 100 tỷ sau 2 tuần" thì factuality = false).
+  3. Cảnh giác với việc một nguồn nhắc đến sự kiện A, nguồn khác nhắc sự kiện B rồi bạn tự gom lại cho đúng. Phải có ít nhất 1 bằng chứng độc lập đồng bộ các chi tiết của mệnh đề.
+  4. Mệnh đề bị bác bỏ nếu có bất kỳ điểm mâu thuẫn lớn nào với bằng chứng.
 
   Phản hồi BẮT BUỘC bằng định dạng JSON với 4 khóa sau:
   - "reasoning": Trích dẫn đoạn text cụ thể từ bằng chứng ủng hộ hoặc bác bỏ mệnh đề (tối đa 30 từ).
