@@ -314,8 +314,16 @@ def checkworthy_node(state: FactCheckState):
         for claim in candidate_claims:
             norm_claim = re.sub(r'[\W_]+', '', claim).lower()
             verdict = str(normalized_llm_result.get(norm_claim, "")).strip().lower()
+            
+            # Fallback for partial/truncated keys from LLM 
+            if not verdict:
+                for k, v in normalized_llm_result.items():
+                    if k in norm_claim or norm_claim in k:
+                        verdict = str(v).strip().lower()
+                        break
+
             print(f"  Verdict for '{claim[:50]}...': '{verdict}'")
-            if verdict.startswith("có"):
+            if verdict.startswith("có") or verdict.startswith("co"):
                 checkworthy_claims.append(claim)
                 print(f"    ✅ INCLUDED")
             else:
@@ -428,7 +436,7 @@ def verify_node(state: FactCheckState):
     prompt_tokens = state.get("prompt_tokens", 0)
     completion_tokens = state.get("completion_tokens", 0)
 
-    verify_evidences_per_claim = max(1, int(os.getenv("VERIFY_EVIDENCES_PER_CLAIM", "1")))
+    verify_evidences_per_claim = max(1, int(os.getenv("VERIFY_EVIDENCES_PER_CLAIM", "3")))
     verify_max_retries = max(1, int(os.getenv("VERIFY_MAX_RETRIES", "1")))
 
     def _run_verify_once(claim: str, evidences_subset: list):
