@@ -8,10 +8,10 @@ decompose_prompt: |
   3. Không suy diễn. Chỉ viết lại các ý xuất hiện rõ ràng.
   4. TUYỆT ĐỐI bế toàn bộ bối cảnh (thời gian cụ thể, sự kiện, địa điểm) từ mệnh đề trước gắn vào mệnh đề sau nếu mệnh đề sau có tính kế thừa. Thay đại từ mơ hồ bằng chủ thể đầy đủ.
   5. Mỗi claim ngắn gọn, độc lập, có thể kiểm chứng.
-  6. **Normalize temporal references**: Nếu claim chứa từ tương đối về thời gian (hôm nay, hôm qua, tuần này, tháng trước, năm ngoái, v.v.), hãy thay bằng ngày/tháng cụ thể dựa trên hôm nay là {current_date}. Model tự suy ra động:
-     - Ví dụ: "Tổng thống hiện nay của Việt Nam là Tô Lâm" → "Tổng thống ngày 26/3/2026 của Việt Nam là Tô Lâm"
-     - Ví dụ: "giá xăng hôm qua cao" → "giá xăng ngày 25/3/2026 cao"
-     - Ví dụ: "tuần này UBND họp" → "từ 23/3 đến 29/3/2026 UBND họp"
+  6. **Normalize temporal references**: CHỈ KHI claim có chứa các từ chỉ thời gian tương đối rõ ràng (hôm nay, hôm qua, tuần trước, hiện nay, năm ngoái, v.v.), mới chuyển đổi sang ngày cụ thể dựa trên mốc thời gian hiện tại là ({current_date}). Bạn phải tự tính toán cộng trừ ngày tháng hợp lý. NẾU KHÔNG CÓ TỪ CHỈ THỜI GIAN, KHÔNG ĐƯỢC THÊM NGÀY THÁNG VÀO CLAIM.
+     - Ví dụ có từ tương đối: "giá xăng hiện nay cao" → "giá xăng ngày {current_date} cao"
+     - Ví dụ mốc thời gian trước: "tuần trước trời mưa" → Tự tính khoảng thời gian của "tuần trước" so với mốc {current_date} (giả sử {current_date} là 08/04/2026 thì điền "trong khoảng từ ngày 30/03/2026 đến 05/04/2026 trời mưa")
+     - Ví dụ KHÔNG có từ tương đối: "Việt Nam có 63 tỉnh" → Giữ nguyên: "Việt Nam có 63 tỉnh" (TUYỆT ĐỐI KHÔNG SỬA THÀNH "Tính đến ngày... Việt Nam có 63 tỉnh")
   7. Tối đa {max_claims} claim.
 
   Ví dụ decompose:
@@ -22,7 +22,7 @@ decompose_prompt: |
     → {{"claims": ["VinFast niêm yết trên sàn NYSE vào ngày 15/8/2023.", "Ngay sau phiên giao dịch đầu tiên trên sàn NYSE vào ngày 15/8/2023, vốn hóa của VinFast đạt 100 tỷ USD."]}}
 
   - Văn bản: "Hôm nay trời mưa. Tôi hôm nay không đi làm."
-    → {{"claims": ["Ngày 26/3/2026 trời mưa.", "Ngày 26/3/2026 tôi không đi làm."]}}
+    → {{"claims": ["Ngày {current_date} trời mưa.", "Ngày {current_date} tôi không đi làm."]}}
 
   Văn bản: {doc}
   Kết quả:
@@ -62,19 +62,21 @@ checkworthy_prompt: |
 
 
 verify_prompt: |
-  Nhiệm vụ của bạn là đóng vai trò một giám khảo khách quan, đánh giá độ chính xác của [Mệnh đề] CHỈ DỰA VÀO [Bằng chứng] được cung cấp.
-  TUYỆT ĐỐI KHÔNG sử dụng kiến thức nền của bạn. Hãy coi [Bằng chứng] là sự thật tuyệt đối.
+  Nhiệm vụ của bạn là đóng vai trò một giám khảo khách quan, đánh giá độ chính xác của [Mệnh đề] DỰA VÀO [Bằng chứng] được cung cấp. LƯU Ý QUAN TRỌNG: [Mệnh đề] đôi khi đề cập đến một sự thật đang diễn ra ở thời điểm hiện tại (cụ thể là năm {current_year}).
 
+  TUYỆT ĐỐI KHÔNG sử dụng kiến thức nền của bạn. Hãy coi [Bằng chứng] là nguồn tham chiếu duy nhất. Tuy nhiên, bạn phải suy luận về TÍNH CẬP NHẬT (Outdated information):
+  
   Quy tắc đánh giá:
-  1. Yêu cầu khớp TOÀN BỘ CHI TIẾT: [Mệnh đề] chỉ được đánh giá là đúng nếu bằng chứng xác nhận đầy đủ mọi yếu tố cốt lõi (chủ đề, con số, địa điểm VÀ THỜI GIAN/SỰ KIỆN CỤ THỂ). 
-  2. BẮT LỖI GHÉP NỐI SAI (Mismatched Time/Event): Mệnh đề khẳng định "sự kiện X đạt kết quả Y vào thời điểm T1" nhưng Bằng chứng cho thấy "sự kiện X đạt kết quả Y vào thời điểm T2" -> BẮT BUỘC ĐÁNH GIÁ FALSE. (Ví dụ: "Vượt mốc 100 tỷ ngay phiên đầu tiên" nhưng nguồn ghi "Vượt mốc 100 tỷ sau 2 tuần" thì factuality = false).
-  3. Cảnh giác với việc một nguồn nhắc đến sự kiện A, nguồn khác nhắc sự kiện B rồi bạn tự gom lại cho đúng. Phải có ít nhất 1 bằng chứng độc lập đồng bộ các chi tiết của mệnh đề.
-  4. Mệnh đề bị bác bỏ nếu có bất kỳ điểm mâu thuẫn lớn nào với bằng chứng.
+  1. Yêu cầu khớp TOÀN BỘ CHI TIẾT: [Mệnh đề] chỉ được đánh giá là đúng nếu bằng chứng xác nhận đầy đủ mọi yếu tố. 
+  2. BẮT LỖI THÔNG TIN LỖI THỜI (Outdated Evidence): Nếu mệnh đề là một khẳng định ở hiện tại (viết ở thì hiện tại hoặc ngầm hiểu là hiện tại) nhưng bằng chứng nhắc đến thời điểm trong quá khứ và CÓ KHẢ NĂNG bị thay đổi (ví dụ: số lượng tỉnh thành, dân số, chức vụ lãnh đạo), bạn phải cẩn trọng. Nếu bạn có một bằng chứng khác mới hơn hoặc cập nhật hơn chỉ ra một sự thật khác (ví dụ: nay chỉ còn 34 tỉnh), thì thông tin 63 tỉnh là SAI (Lỗi thời). Tuy nhiên, nếu bằng chứng là một sự thật bất biến hoặc trạng thái kế thừa (ví dụ: Hà Nội là thủ đô từ 1946 đến nay), thì ĐÁNH GIÁ TRUE.
+  3. XỬ LÝ RANH GIỚI NHIỆM KỲ (Term Limits): Nếu bằng chứng nhắc đến một nhiệm kỳ sẽ kết thúc ngay trong năm hiện tại (ví dụ nhiệm kỳ 2021-{current_year}), thì trạng thái "đương nhiệm" hay "nhiệm kỳ trước" rất nhạy cảm. Nếu mệnh đề khẳng định là "nhiệm kỳ trước" hoặc "đã rời chức" nhưng các bằng chứng CÓ SẴN (dù là mới nhất) vẫn chỉ ghi là nhiệm kỳ 2021-{current_year} mà không đề cập đến chức vụ thay thế, hãy bắt lỗi là "Chưa có thông tin xác nhận việc chuyển giao chức vụ mới" thay vì kết luận gay gắt là mệnh đề sai hoàn toàn do mâu thuẫn thời gian.
+  4. BẮT LỖI GHÉP NỐI SAI (Mismatched Time/Event): Mệnh đề khẳng định "sự kiện X đạt kết quả Y vào thời điểm T1" nhưng Bằng chứng cho thấy "sự kiện X đạt kết quả Y vào thời điểm T2" -> ĐÁNH GIÁ FALSE. 
+  5. Mệnh đề bị bác bỏ nếu có bất kỳ điểm mâu thuẫn lớn nào với các bằng chứng cập nhật nhất.
 
   Phản hồi BẮT BUỘC bằng định dạng JSON với 4 khóa sau:
-  - "reasoning": Trích dẫn đoạn text cụ thể từ bằng chứng ủng hộ hoặc bác bỏ mệnh đề (tối đa 30 từ).
-  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu sai, chỉ ra điểm mâu thuẫn.
-  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu sai, sửa lại cho đúng với bằng chứng.
+  - "reasoning": Giải thích đối chiếu giữa mệnh đề và bằng chứng (tối đa 30 từ).
+  - "error": Ghi "không có" nếu mệnh đề đúng. Nếu sai, chỉ ra điểm mâu thuẫn hoặc sự lỗi thời.
+  - "correction": Ghi "không có" nếu mệnh đề đúng. Nếu sai, sửa lại cho đúng.
   - "factuality": true hoặc false (boolean).
 
   Input:
