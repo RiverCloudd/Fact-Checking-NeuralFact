@@ -204,7 +204,7 @@ def decompose_node(state: FactCheckState):
     
     for i in range(decompose_max_retries):
         try:
-            response = deepseek_llm.invoke(user_input)
+            response = gemini_llm.invoke(user_input)
             cleaned_content = clean_json_response(response.content)
             result = json.loads(cleaned_content)
             claims = result.get("claims", [])
@@ -213,8 +213,8 @@ def decompose_node(state: FactCheckState):
             used_prompt_tokens, used_completion_tokens = _extract_token_usage(response)
             prompt_tokens += used_prompt_tokens
             completion_tokens += used_completion_tokens
-            deepseek_prompt_tokens += used_prompt_tokens
-            deepseek_completion_tokens += used_completion_tokens
+            gemini_prompt_tokens += used_prompt_tokens
+            gemini_completion_tokens += used_completion_tokens
             
             if isinstance(claims, list) and len(claims) > 0:
                 break
@@ -233,7 +233,7 @@ def decompose_node(state: FactCheckState):
     print(f"\n📄 DECOMPOSE NODE")
     print(f"  Extracted {len(claims)} claims")
     for i, claim in enumerate(claims, 1):
-        print(f"  [{i}] {claim[:60]}...")
+        print(f"  [{i}] {claim}")
 
     return {
         "claims": claims, 
@@ -253,7 +253,7 @@ def checkworthy_node(state: FactCheckState):
     print(f"\n📋 CHECKWORTHY NODE")
     print(f"  Input claims count: {len(claims)}")
     for i, claim in enumerate(claims, 1):
-        print(f"  [{i}] {claim[:60]}...")
+        print(f"  [{i}] {claim}")
 
     max_claims = max(1, int(os.getenv("MAX_CLAIMS", "3")))
     deepseek_prompt_tokens = state.get("deepseek_prompt_tokens", 0)
@@ -305,8 +305,15 @@ def checkworthy_node(state: FactCheckState):
 
     checkworthy_claims = []
     if isinstance(llm_result, dict):
+        # Chuẩn hóa keys từ LLM để tránh lỗi unmatch do dấu nháy, khoảng trắng (VD: ngoặc kép tên phim)
+        normalized_llm_result = {
+            re.sub(r'[\W_]+', '', k).lower(): v 
+            for k, v in llm_result.items()
+        }
+        
         for claim in candidate_claims:
-            verdict = str(llm_result.get(claim, "")).strip().lower()
+            norm_claim = re.sub(r'[\W_]+', '', claim).lower()
+            verdict = str(normalized_llm_result.get(norm_claim, "")).strip().lower()
             print(f"  Verdict for '{claim[:50]}...': '{verdict}'")
             if verdict.startswith("có"):
                 checkworthy_claims.append(claim)
@@ -321,7 +328,7 @@ def checkworthy_node(state: FactCheckState):
     
     print(f"  Output checkworthy claims count: {len(checkworthy_claims)}")
     for i, claim in enumerate(checkworthy_claims, 1):
-        print(f"  [{i}] {claim[:60]}...")
+        print(f"  [{i}] {claim}")
 
     return {
         "checkworthy_claims": checkworthy_claims,
@@ -358,9 +365,19 @@ def retrieve_node(state: FactCheckState):
         claim_evidences = []
         primary_query = queries[0] if queries else claim
         
-        print(f"\n🔍 Đang tìm kiếm bằng chứng cho: '{claim[:50]}...'")
+        # Append current year to query to surface recent information
+        current_datetime = datetime.fromisoformat(state.get("current_datetime", datetime.now().isoformat()))
+        current_year = current_datetime.year
+        
+        # Only append year if there are no numbers indicating a specific year in the query
+        if not re.search(r'\b(19|20)\d{2}\b', primary_query):
+            search_query = f"{primary_query} hiện nay {current_year}"
+        else:
+            search_query = primary_query
 
-        serper_results = search_google(primary_query, top_k=serper_top_k)
+        print(f"\n🔍 Đang tìm kiếm bằng chứng cho: '{claim[:50]}...' với query: '{search_query}'")
+
+        serper_results = search_google(search_query, top_k=serper_top_k)
         if serper_results:
             claim_evidences.extend(serper_results)
             print(f"  🌐 Google trả về {len(serper_results)} bằng chứng.")
@@ -425,10 +442,15 @@ def verify_node(state: FactCheckState):
         evidence_text = "\n\n".join(
             [f"[Nguồn {i+1}]: {_evidence_to_text(ev)}" for i, ev in enumerate(evidences_subset) if _evidence_to_text(ev)]
         )
+        
+        current_datetime = datetime.fromisoformat(state.get("current_datetime", datetime.now().isoformat()))
+        current_year = current_datetime.year
+        
         verify_prompt = prompt_config.verify_prompt.format(
             original_doc=original_doc_short,
             claim=claim,
             evidence=evidence_text,
+            current_year=current_year
         ).strip()
 
         verification_result = None
